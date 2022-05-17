@@ -1,36 +1,36 @@
 import React, { useEffect, useState } from 'react'
 
 import TableInstance from '../../components/Table/TableInstance'
-import { useAllTruckQuery } from '../../hooks/useTruckQuery'
+import { useAllProductQuery } from '../../hooks/useProductQuery'
 
 const columnsHeader = [
   {
-    Header: 'Nama Truk',
+    Header: 'Nama Pelanggan',
     accessor: 'name',
   },
   {
-    Header: 'Kapasitas (dalam kg)',
-    accessor: 'capacity',
+    Header: 'Berat',
+    accessor: 'weight',
   },
   {
-    Header: 'No Kendaraan',
-    accessor: 'vehicleNo',
+    Header: 'Harga',
+    accessor: 'price',
   },
   {
     width: 300,
     Header: "Aksi",
     accessor: "id",
     Cell: ({ cell }) => (
-      <a href={`/admin/truck/update/${cell.row.values.id}`} value={cell.row.values.id} className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150' target='_blank' rel='noreferrer'>
+      <a href={`/admin/product/update/${cell.row.values.id}`} value={cell.row.values.id} className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150' target='_blank' rel='noreferrer'>
         Ubah data  
       </a>
     )
   }
 ]
 
-const ViewTruck = () => {
+const ViewProduct = () => {
   const TableQuery = () => {
-    const { data, isLoading, isSuccess } = useAllTruckQuery()
+    const { data, isLoading, isSuccess } = useAllProductQuery()
 
     const [tableData, setTableData] = useState(null);
   
@@ -53,7 +53,7 @@ const ViewTruck = () => {
         <div className='flex flex-wrap items-center'>
           <div className='relative w-full px-4 max-w-full flex-grow flex-1'>
             <h3 className='font-semibold text-lg'>
-              Data Truk
+              Data Customer
             </h3>
           </div>
         </div>
@@ -65,4 +65,4 @@ const ViewTruck = () => {
   )
 }
 
-export default ViewTruck
+export default ViewProduct

@@ -5,7 +5,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Customer {
+model customer {
   id        Int      @id @default(autoincrement())
   name      String   @db.VarChar(255)
   phone     String   @db.VarChar(30)
@@ -15,11 +15,20 @@ model Customer {
   updatedAt DateTime @updatedAt
 }
 
-model Truck {
+model truck {
   id        Int      @id @default(autoincrement())
   name      String   @db.VarChar(255)
   capacity  Int
   vehicleNo String   @db.VarChar(30)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model product {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  weight    Float
+  price     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

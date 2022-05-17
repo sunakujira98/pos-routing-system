@@ -44,7 +44,7 @@ const createCustomer = async (req, res) => {
 
     const customer = customerServices.create(customerBody)
 
-    res.status(201).send({ customer, message: 'Successfully created new customer record' })
+    res.status(201).send({ customer, message: 'Berhasil membuat data customer baru' })
   } catch (error) {
     console.error('Error createCustomer controller', logger.error(error))
     res.status(500).send('There is an error when processing createCustomer')
@@ -64,7 +64,7 @@ const updateCustomer = async (req, res) => {
   try {
     const customer = customerServices.update(customerId, customerBody)
 
-    res.status(200).send({ customer, message: 'Succesfully updated customer record ' })
+    res.status(200).send({ customer, message: 'Berhasil mengubah data customer' })
   } catch (error) {
     logger.error('Error updateCustomer controller', logger.error(error))
     res.status(500).send('There is an error when processing updateCustomer')

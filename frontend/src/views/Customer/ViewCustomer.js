@@ -22,7 +22,7 @@ const columnsHeader = [
   },
   {
     width: 300,
-    Header: "Artist Name",
+    Header: "Aksi",
     accessor: "id",
     Cell: ({ cell }) => (
       <a href={`/admin/customer/update/${cell.row.values.id}`} value={cell.row.values.id} className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150' target='_blank' rel='noreferrer'>

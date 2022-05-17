@@ -14,6 +14,10 @@ import CreateTruck from './views/Truck/CreateTruck'
 import EditTruck from './views/Truck/EditTruck'
 import ViewTruck from './views/Truck/ViewTruck'
 
+import CreateProduct from './views/Product/CreateProduct'
+import EditProduct from './views/Product/EditProduct'
+import ViewProduct from './views/Product/ViewProduct'
+
 const queryClient = new QueryClient({defaultOptions: {queries: {refetchOnWindowFocus: false}}})
 
 function App() {
@@ -30,6 +34,9 @@ function App() {
               <Route exact path="/admin/truck/create" element={<CreateTruck />} />
               <Route exact path="/admin/truck/update/:id" element={<EditTruck />} />
               <Route exact path="/admin/truck/list" element={<ViewTruck />} />
+              <Route exact path="/admin/product/create" element={<CreateProduct />} />
+              <Route exact path="/admin/product/update/:id" element={<EditProduct />} />
+              <Route exact path="/admin/product/list" element={<ViewProduct />} />
               <Route
                 path='/'
                 element={<ViewCustomer />}
