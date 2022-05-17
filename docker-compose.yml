@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:alpine
+    container_name: db_pos_routing
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db_pos_routing
+    ports:
+      - 5433:5432
+    volumes:
+      - ./files/sql:/docker-entrypoint-initdb.d
+
+  pgweb:
+    image: sosedoff/pgweb
+    container_name: app_pgweb_pos_routing
+    restart: unless-stopped
+    ports:
+      - 8084:8081
+    links:
+      - postgres:postgres
+    environment:
+      - DATABASE_URL=postgres://postgres:password@postgres:5432/db_pos_routing?sslmode=disable

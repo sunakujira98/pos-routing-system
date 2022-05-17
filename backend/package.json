@@ -1,0 +1,19 @@
+{
+  "name": "routing-backend",
+  "version": "1.0.0",
+  "description": "Routing backend System",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon src/server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Andre",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^3.14.0",
+    "dayjs": "^1.11.2",
+    "express": "^4.18.1",
+    "nodemon": "^2.0.16",
+    "prisma": "^3.14.0"
+  }
+}
