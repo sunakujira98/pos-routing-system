@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -19,7 +19,7 @@ const schema = yup.object().shape({
 const EditCustomer = () => {
   const { id } = useParams();
 
-  const {isLoading, isSuccess, isError, data: customerData, error} = useCustomerByIdQuery(id)
+  const {data: customerData} = useCustomerByIdQuery(id)
   const updateCustomerMutation = useUpdateCustomerQuery(id)
   const {
     isLoading: isLoadingMutation, 
@@ -60,7 +60,7 @@ const EditCustomer = () => {
               {/* {isSuccessMutation && <p>{dataMutation?.message}</p>}
               {isErrorMutation && <p>{errorMutation?.message}</p>} */}
               <h6 className='text-gray-400 text-sm mt-3 mb-6 font-bold uppercase'>
-                Informasi Customer
+                Informasi Customer {customerData?.name}
               </h6>
               <div className='flex flex-wrap'>
                 <div className='w-full lg:w-6/12 px-4 mb-2'>

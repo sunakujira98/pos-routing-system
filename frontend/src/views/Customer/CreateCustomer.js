@@ -1,6 +1,6 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -38,10 +38,8 @@ const CreateCustomer = () => {
               </div>
             </div>
             <div className='flex-auto px-4 lg:px-10 py-10 pt=0 bg-gray-100'>
-              {/* {isSuccess && toast.success(data?.message, {toastId: "unique-random-text-xAu9C9-"})}
-              {isError && toast.error(error?.message)} */}
-              {isSuccess && <p>{data?.message}</p>}
-              {isError && <p>{error?.message}</p>}
+              {isSuccess && toast.success(data?.message, {toastId: "unique-random-text-xAu9C9-"})}
+              {isError && toast.error(error?.message)}
               <h6 className='text-gray-400 text-sm mt-3 mb-6 font-bold uppercase'>
                 Informasi Customer
               </h6>
@@ -108,12 +106,15 @@ const CreateCustomer = () => {
             </div>
             <div className='rounded-t bg-white mb-0 px-6 py-6'>
               <div className='float-right'>
-                <button
-                  className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150'
-                  type='submit'
-                >
-                  Simpan
-                </button>
+                {isLoading
+                  ? <p>Sedang mengubah</p>
+                  : <button
+                    className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150'
+                    type='submit'
+                  >
+                    Simpan
+                  </button>
+                }
               </div>
             </div>
           </div>

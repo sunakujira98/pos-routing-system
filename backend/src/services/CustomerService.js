@@ -8,9 +8,9 @@ const get = async () => {
 }
 
 const getById = async id => {
-  const customers = await prisma.customer.findUnique({ where: { id } })
+  const customer = await prisma.customer.findUnique({ where: { id } })
 
-  return customers
+  return customer
 }
 
 const create = async customerData => {

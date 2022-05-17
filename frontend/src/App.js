@@ -11,6 +11,8 @@ import EditCustomer from './views/Customer/EditCustomer'
 import ViewCustomer from './views/Customer/ViewCustomer'
 
 import CreateTruck from './views/Truck/CreateTruck'
+import EditTruck from './views/Truck/EditTruck'
+import ViewTruck from './views/Truck/ViewTruck'
 
 const queryClient = new QueryClient({defaultOptions: {queries: {refetchOnWindowFocus: false}}})
 
@@ -26,6 +28,8 @@ function App() {
               <Route exact path="/admin/customer/update/:id" element={<EditCustomer />} />
               <Route exact path="/admin/customer/list" element={<ViewCustomer />} />
               <Route exact path="/admin/truck/create" element={<CreateTruck />} />
+              <Route exact path="/admin/truck/update/:id" element={<EditTruck />} />
+              <Route exact path="/admin/truck/list" element={<ViewTruck />} />
               <Route
                 path='/'
                 element={<ViewCustomer />}
