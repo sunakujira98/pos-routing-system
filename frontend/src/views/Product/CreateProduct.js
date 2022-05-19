@@ -36,7 +36,7 @@ const CreateProduct = () => {
                 <h6 className='text-blueGray-700 text-xl font-bold'>Tambah Truk Baru</h6>
               </div>
             </div>
-            <div className='flex-auto px-4 lg:px-10 py-10 pt=0 bg-gray-100'>
+            <div className='flex-auto px-4 lg:px-10 py-10 pt-0 bg-gray-100'>
               {isSuccess && toast.success(data?.message, {toastId: "unique-random-text-xAu9C9-"})}
               {isError && toast.error(error?.message)}
               <h6 className='text-gray-400 text-sm mt-3 mb-6 font-bold uppercase'>

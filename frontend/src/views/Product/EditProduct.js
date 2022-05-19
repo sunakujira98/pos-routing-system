@@ -53,7 +53,7 @@ const EditProduct = () => {
                 <h6 className='text-blueGray-700 text-xl font-bold'>Ubah Data Produk </h6>
               </div>
             </div>
-            <div className='flex-auto px-4 lg:px-10 py-10 pt=0 bg-gray-100'>
+            <div className='flex-auto px-4 lg:px-10 py-10 pt-0 bg-gray-100'>
               {isSuccessMutation && toast.success(dataMutation?.message, {toastId: "unique-random-text-xAu9C9-"})}
               {isErrorMutation && toast.error(errorMutation?.message)}
               {/* {isSuccessMutation && <p>{dataMutation?.message}</p>}
