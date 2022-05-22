@@ -6,9 +6,10 @@ import ErrorMessage from '../../components/ErrorMessage'
 import { showNumberInRupiah } from '../../utils/Helpers'
 
 const OrderCart = ({ id, productData }) => {
-  const { register, handleSubmit, formState: {errors} } = useForm()
+  const { register, handleSubmit, formState: {errors}, setValue, getValues } = useForm()
 
   const [ products, setProducts ] = useState([])
+  const [ totalWeight, setTotalWeight ] = useState(0)
   
   useEffect(() => {
     if (id) {
@@ -20,6 +21,23 @@ const OrderCart = ({ id, productData }) => {
       }
     }
   }, [id, productData, products])
+
+  const handleQtyChange = (event, index) => {
+    const qty = event.target.value || 0
+    const price = getValues(`transactionDetail[${index}].price`)
+    const subTotal = parseInt(qty) * price
+
+    // setTotalWeight()
+    
+    setValue(`transactionDetail[${index}].subTotal`, subTotal)
+    setValue(`transactionDetail[${index}].subTotalRupiah`, showNumberInRupiah(subTotal))
+
+    console.log("price", subTotal)
+  }
+
+  const submitForm = (data) => {
+    console.log("dataa", data)
+  }
 
   console.log("products", products)
 
@@ -72,36 +90,87 @@ const OrderCart = ({ id, productData }) => {
             Aksi
           </div>
         </div>
-        {products.map(product => {
-          return (
+        <form onSubmit={handleSubmit(submitForm)}>
+          {products.map((product, index) => {
+            return (
+              <div className='w-full flex font-semibold text-gray-600' key={product.id}>
+                <div className='w-full lg:w-5/12 p-2 border-b border-l border-r'>
+                  <input
+                    {...register(`transactionDetail[${index}].id`)}
+                    type='hidden'
+                    value={product.id}
+                    placeholder='QTY'
+                    autoComplete='off'
+                  />
+                  {product.name}
+                </div>
+                <div className='w-full lg:w-1/12 p-2 border-b border-l border-r'>
+                  {product.weight} kg
+                </div>
+                <div className='w-full lg:w-1/12 p-2 border-b border-l border-r'>
+                  <input
+                    {...register(`transactionDetail[${index}].qty`)}
+                    type='text'
+                    className='border-0 px-3 py-2 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
+                    onChange={(event) => handleQtyChange(event, index)}
+                    placeholder='QTY'
+                    autoComplete='off'
+                  />
+                </div>
+                <div className='w-full lg:w-2/12 p-2 border-b border-l border-r'>
+                  <input
+                    {...register(`transactionDetail[${index}].price`)}
+                    type='hidden'
+                    value={product.price}
+                    placeholder='QTY'
+                    autoComplete='off'
+                  />
+                  {showNumberInRupiah(product.price)}
+                </div>
+                <div className='w-full lg:w-2/12 p-2 border-b border-l border-r'>
+                  <input
+                    {...register(`transactionDetail[${index}].subTotal`)}
+                    type='hidden'
+                    className='border-0 px-3 py-2 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
+                    onChange={(event) => handleQtyChange(event, index)}
+                    autoComplete='off'
+                  />
+                  <input
+                    {...register(`transactionDetail[${index}].subTotalRupiah`)}
+                    type='text'
+                    className='border-0 px-3 py-2 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
+                    disabled={true}
+                    onChange={(event) => handleQtyChange(event, index)}
+                    autoComplete='off'
+                  />
+                </div>
+                <div className='w-full lg:w-1/12 p-2 border-b border-l border-r'>
+                  Aksi
+                </div>
+              </div>
+            )
+          })}
+          {products.length > 0 && 
             <div className='w-full flex font-semibold text-gray-600'>
-              <div className='w-full lg:w-5/12 p-2 border-b border-l border-r'>
-                {product.name}
-              </div>
-              <div className='w-full lg:w-1/12 p-2 border-b border-l border-r'>
-                {product.weight} kg
-              </div>
-              <div className='w-full lg:w-1/12 p-2 border-b border-l border-r'>
-                <input
-                  {...register('phone')}
-                  type='text'
-                  className='border-0 px-3 py-2 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
-                  placeholder='QTY'
-                  autoComplete='off'
-                />
-              </div>
-              <div className='w-full lg:w-2/12 p-2 border-b border-l border-r'>
-                {showNumberInRupiah(product.price)}
-              </div>
-              <div className='w-full lg:w-2/12 p-2 border-b border-l border-r'>
-                Subtotal
-              </div>
-              <div className='w-full lg:w-1/12 p-2 border-b border-l border-r'>
-                Aksi
+              <div className='w-full lg:w-5/12 p-2 border-r border-l border-b'>
+                Total Berat
+              </div>              
+              <div className='w-full lg:w-1/12 p-2 border-r border-l border-b'>
+                Total Berat
               </div>
             </div>
-          )
-        })}
+          }
+          <div className='rounded-t mb-0 py-6'>
+            <div className='float-right'>
+            <button
+              className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150'
+              type='submit'
+            >
+              Simpan
+            </button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   )

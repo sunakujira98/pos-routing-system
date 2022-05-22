@@ -18,10 +18,10 @@ const CreateOrder = () => {
 
   return (
     <div className='flex flex-wrap'>
-      <div className='w-full lg:w-6/12 px-4'>
+      <div className='w-full lg:w-7/12 px-4'>
         <CartOrder id={id} productData={data} />
       </div>
-      <div className='w-full lg:w-6/12 px-4'>
+      <div className='w-full lg:w-5/12 px-4'>
         <SelectProduct data={data} setProductId={setProductId} />
       </div>
     </div>
