@@ -1,16 +1,28 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import CartOrder from './CartOrder'
 import SelectProduct from './SelectProduct'
 
+import { useAllProductQuery } from '../../hooks/useProductQuery'
+
 const CreateOrder = () => {
+  const [id, setId] = useState(null)
+
+  const { data, isLoading } = useAllProductQuery()
+  
+  const setProductId = (productId) => {
+    setId(productId)
+  }
+
+  if (isLoading) return <p>Loading...</p>
+
   return (
     <div className='flex flex-wrap'>
       <div className='w-full lg:w-6/12 px-4'>
-        <CartOrder />
+        <CartOrder id={id} productData={data} />
       </div>
       <div className='w-full lg:w-6/12 px-4'>
-        <SelectProduct />
+        <SelectProduct data={data} setProductId={setProductId} />
       </div>
     </div>
   )

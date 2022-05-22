@@ -1,9 +1,12 @@
 import React from 'react'
+import { array, func } from 'prop-types'
+import ProductCard from '../../components/ProductCard'
 
-import { useAllProductQuery } from '../../hooks/useProductQuery'
+const SelectProduct = ({ data, setProductId }) => {
 
-const SelectProduct = () => {
-  const { data, isLoading, isSuccess } = useAllProductQuery()
+  const onSelectProduct = (id) => {
+    setProductId(id)
+  }
 
   return (
     <div className='relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-red-500 py-5 border-0'>
@@ -26,138 +29,26 @@ const SelectProduct = () => {
         </div>
         <div className='w-full flex'>
           <div className='relative w-full mb-3'>
-            <button
-              type='button'
-              className='p-1 bg-white m-5'
-            >
-              <span className='h-28 p-2'>
-                <img 
-                  src='https://www.4me.com/wp-content/uploads/2018/01/4me-icon-product.png' 
-                  alt='Test'
-                  className='w-24 h-24'
+            {data.map(product => {
+              return (
+                <ProductCard
+                  key={product?.id}
+                  id={product?.id}
+                  name={product?.name}
+                  onClick={onSelectProduct}
                 />
-              </span>
-              <span
-                className='block w-28 bg-gray-300 h-10 whitespace-pre-wrap'
-              >
-                <span
-                  className='align-middle'
-                >
-                  Barang 1
-                </span>
-              </span>
-            </button>
-            <button
-              type='button'
-              className='p-1 bg-white m-5'
-            >
-              <span className='h-28 p-2'>
-                <img 
-                  src='https://www.4me.com/wp-content/uploads/2018/01/4me-icon-product.png' 
-                  alt='Test'
-                  className='w-24 h-24'
-                />
-              </span>
-              <span
-                className='block w-28 bg-gray-300 h-10 whitespace-pre-wrap'
-              >
-                <span
-                  className='align-middle'
-                >
-                  Barang 1
-                </span>
-              </span>
-            </button>
-            <button
-              type='button'
-              className='p-1 bg-white m-5'
-            >
-              <span className='h-28 p-2'>
-                <img 
-                  src='https://www.4me.com/wp-content/uploads/2018/01/4me-icon-product.png' 
-                  alt='Test'
-                  className='w-24 h-24'
-                />
-              </span>
-              <span
-                className='block w-28 bg-gray-300 h-10 whitespace-pre-wrap'
-              >
-                <span
-                  className='align-middle'
-                >
-                  Barang 1
-                </span>
-              </span>
-            </button>
-            <button
-              type='button'
-              className='p-1 bg-white m-5'
-            >
-              <span className='h-28 p-2'>
-                <img 
-                  src='https://www.4me.com/wp-content/uploads/2018/01/4me-icon-product.png' 
-                  alt='Test'
-                  className='w-24 h-24'
-                />
-              </span>
-              <span
-                className='block w-28 bg-gray-300 h-10 whitespace-pre-wrap'
-              >
-                <span
-                  className='align-middle'
-                >
-                  Barang 1
-                </span>
-              </span>
-            </button>
-            <button
-              type='button'
-              className='p-1 bg-white m-5'
-            >
-              <span className='h-28 p-2'>
-                <img 
-                  src='https://www.4me.com/wp-content/uploads/2018/01/4me-icon-product.png' 
-                  alt='Test'
-                  className='w-24 h-24'
-                />
-              </span>
-              <span
-                className='block w-28 bg-gray-300 h-10 whitespace-pre-wrap'
-              >
-                <span
-                  className='align-middle'
-                >
-                  Barang 1
-                </span>
-              </span>
-            </button>
-            <button
-              type='button'
-              className='p-1 bg-white m-5'
-            >
-              <span className='h-28 p-2'>
-                <img 
-                  src='https://www.4me.com/wp-content/uploads/2018/01/4me-icon-product.png' 
-                  alt='Test'
-                  className='w-24 h-24'
-                />
-              </span>
-              <span
-                className='block w-28 bg-gray-300 h-10 whitespace-pre-wrap'
-              >
-                <span
-                  className='align-middle'
-                >
-                  Barang 1
-                </span>
-              </span>
-            </button>
-            
+              )
+            })}
           </div>
         </div>
       </div>
     </div>
   )
+}
+
+SelectProduct.propTypes = {
+  data: array.isRequired,
+  setProductId: func.isRequired
 }
 
 export default SelectProduct

@@ -3,6 +3,8 @@ import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import CreateOrder from '../views/Order/CreateOrder'
+
 function Crud() {
   return (
     <>
