@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 
-import ErrorMessage from '../../components/ErrorMessage'
+import ErrorLabel from '../../components/ErrorLabel'
 import { useCreateTruckQuery } from '../../hooks/useTruckQuery'
 
 const schema = yup.object().shape({
@@ -53,7 +53,7 @@ const CreateTruck = () => {
                       className='border-0 px-3 py-3 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
                       placeholder='Nama Truck'
                     />
-                    <ErrorMessage> {errors.name?.message} </ErrorMessage>
+                    <ErrorLabel> {errors.name?.message} </ErrorLabel>
                   </div>
                 </div>
                 <div className='w-full lg:w-6/12 px-4 mb-2'>
@@ -67,7 +67,7 @@ const CreateTruck = () => {
                       className='border-0 px-3 py-3 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
                       placeholder='Kapasitas Truk'
                     />
-                    <ErrorMessage>{errors.capacity?.message} </ErrorMessage>
+                    <ErrorLabel>{errors.capacity?.message} </ErrorLabel>
                   </div>
                 </div>
                 <div className='w-full lg:w-6/12 px-4 mb-2'>
@@ -82,7 +82,7 @@ const CreateTruck = () => {
                       placeholder='Nomor Polisi'
                       autoComplete='off'
                     />
-                    <ErrorMessage>{errors.vehicleNo?.message} </ErrorMessage>
+                    <ErrorLabel>{errors.vehicleNo?.message} </ErrorLabel>
                   </div>
                 </div>  
               </div>

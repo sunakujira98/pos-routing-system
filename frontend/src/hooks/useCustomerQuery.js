@@ -1,11 +1,11 @@
 import { useMutation, useQuery } from 'react-query'
 import { getAllCustomer, createCustomer, getCustomerById, updateCustomer } from '../services/customer'
 
-export const useAllCustomerQuery = () => {
+export const useAllCustomerQuery = ( shouldRefetch = false) => {
   const query = useQuery(['all-customer'], async () => {
     const response = await getAllCustomer()
     return response?.data
-  })
+  }, {refetchInterval: shouldRefetch ? 4000 : undefined, refetchIntervalInBackground: shouldRefetch})
 
   return query
 }

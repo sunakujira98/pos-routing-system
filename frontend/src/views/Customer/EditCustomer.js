@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 
-import ErrorMessage from '../../components/ErrorMessage'
+import ErrorLabel from '../../components/ErrorLabel'
 import { useCustomerByIdQuery, useUpdateCustomerQuery } from '../../hooks/useCustomerQuery'
 
 const schema = yup.object().shape({
@@ -74,7 +74,7 @@ const EditCustomer = () => {
                       className='border-0 px-3 py-3 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
                       placeholder='Nama Customer'
                     />
-                    <ErrorMessage> {errors.name?.message} </ErrorMessage>
+                    <ErrorLabel> {errors.name?.message} </ErrorLabel>
                   </div>
                 </div>
                 <div className='w-full lg:w-6/12 px-4 mb-2'>
@@ -88,7 +88,7 @@ const EditCustomer = () => {
                       className='border-0 px-3 py-3 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
                       placeholder='Nomor Telepon'
                     />
-                    <ErrorMessage>{errors.phone?.message} </ErrorMessage>
+                    <ErrorLabel>{errors.phone?.message} </ErrorLabel>
                   </div>
                 </div>   
                 <div className='w-full lg:w-6/12 px-4 mb-2'>
@@ -103,7 +103,7 @@ const EditCustomer = () => {
                       className='border-0 px-3 py-3 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
                       placeholder='Alamat'
                     />
-                    <ErrorMessage>{errors.address?.message} </ErrorMessage>
+                    <ErrorLabel>{errors.address?.message} </ErrorLabel>
                   </div>
                 </div>
                 <div className='w-full lg:w-6/12 px-4 mb-2'>
@@ -118,7 +118,7 @@ const EditCustomer = () => {
                       placeholder='Latitude and Longitude'
                       autoComplete='off'
                     />
-                    <ErrorMessage>{errors.latLong?.message} </ErrorMessage>
+                    <ErrorLabel>{errors.latLong?.message} </ErrorLabel>
                   </div>
                 </div>  
               </div>

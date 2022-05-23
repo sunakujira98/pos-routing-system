@@ -6,6 +6,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.1.1",
     "@heroicons/react": "^1.0.6",
+    "@hookform/error-message": "^2.0.0",
     "@hookform/resolvers": "^2.8.9",
     "@popperjs/core": "^2.11.5",
     "@testing-library/jest-dom": "^5.16.4",
@@ -19,6 +20,7 @@
     "react-query": "^3.39.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
+    "react-select": "^5.3.2",
     "react-table": "^7.8.0",
     "react-toastify": "^9.0.1",
     "web-vitals": "^2.1.4",

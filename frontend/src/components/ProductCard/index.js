@@ -1,7 +1,9 @@
 import React from 'react'
 import { func, number, string } from 'prop-types'
 
-const ProductCard = ({ id, name, onClick }) => {
+import { showNumberInRupiah } from '../../utils/Helpers'
+
+const ProductCard = ({ id, name, price, onClick }) => {
   return (
     <button
       type='button'
@@ -26,7 +28,7 @@ const ProductCard = ({ id, name, onClick }) => {
         <span
           className='align-middle inline-block'
         >
-          {name}
+          {showNumberInRupiah(price)}
         </span>
       </span>
     </button>
