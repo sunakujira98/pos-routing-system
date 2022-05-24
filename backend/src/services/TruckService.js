@@ -17,7 +17,7 @@ const create = async truckData => {
   const { name, capacity, vehicleNo } = truckData
 
   try {
-    const truck = await prisma.truck.create({ data: { name, capacity, vehicleNo} })
+    const truck = await prisma.truck.create({ data: { name, capacity, vehicle_no : vehicleNo} })
 
     return truck
   } catch (error) {

@@ -6,31 +6,56 @@ generator client {
 }
 
 model customer {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(255)
-  phone     String   @db.VarChar(30)
-  address   String   @db.VarChar(255)
-  latLong   String   @db.VarChar(255)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(255)
+  phone      String   @db.VarChar(30)
+  address    String   @db.VarChar(255)
+  lat_long   String   @db.VarChar(255)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  orders     orders[]
 }
 
 model truck {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(255)
-  capacity  Int
-  vehicleNo String   @db.VarChar(30)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(255)
+  capacity   Int
+  vehicle_no String   @db.VarChar(30)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model product {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(255)
-  weight    Float
-  price     Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(255)
+  weight       Float
+  price        Int
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  orderDetails orderDetails[]
+}
+
+model orders {
+  id           Int            @id @default(autoincrement())
+  customer_id  Int
+  customer     customer       @relation(fields: [customer_id], references: [id])
+  grand_total  Int
+  total_weight Int
+  order_date   DateTime       @default(now())
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  orderDetails orderDetails[]
+}
+
+model orderDetails {
+  id         Int      @id @default(autoincrement())
+  order_id   Int
+  order      orders   @relation(fields: [order_id], references: [id])
+  product_id Int
+  product    product  @relation(fields: [product_id], references: [id])
+  qty        Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 datasource db {

@@ -6,7 +6,7 @@ import SelectProduct from './SelectProduct'
 import { useAllProductQuery } from '../../hooks/useProductQuery'
 
 const CreateOrder = () => {
-  const [id, setId] = useState(null)
+  const [id, setId] = useState(0)
 
   const { data, isLoading } = useAllProductQuery()
   

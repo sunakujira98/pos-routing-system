@@ -2,6 +2,7 @@ const express = require('express')
 const customerRoutes = require('./routes/CustomerRoutes')
 const truckRoutes = require('./routes/TruckRoutes')
 const productRoutes = require('./routes/ProductRoutes')
+const orderRoutes = require('./routes/OrderRoutes')
 
 const app = express()
 
@@ -10,6 +11,7 @@ app.use(express.json())
 app.use('/api/customer', customerRoutes)
 app.use('/api/truck', truckRoutes)
 app.use('/api/product', productRoutes)
+app.use('/api/order', orderRoutes)
 
 app.get('/', (req, res) => {
   res.send('API is running....')

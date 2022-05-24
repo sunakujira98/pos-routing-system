@@ -17,7 +17,7 @@ const create = async customerData => {
   const { name, phone, address, latLong } = customerData
 
   try {
-    const customer = await prisma.customer.create({ data: { name, phone, address, latLong} })
+    const customer = await prisma.customer.create({ data: { name, phone, address, lat_long: latLong} })
 
     return customer
   } catch (error) {

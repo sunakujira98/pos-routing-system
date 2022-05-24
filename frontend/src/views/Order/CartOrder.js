@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, useWatch } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
 import { number } from 'prop-types'
 import Select from 'react-select'
@@ -8,17 +8,27 @@ import ErrorLabel from '../../components/ErrorLabel'
 import { showNumberInRupiah } from '../../utils/Helpers'
 import { useAllCustomerQuery } from '../../hooks/useCustomerQuery'
 import { useAllTruckQuery } from '../../hooks/useTruckQuery'
+import { useCreateOrderQuery } from '../../hooks/useOrderQuery'
 
 const OrderCart = ({ id, productData }) => {
   const { register, handleSubmit, formState: {errors}, setValue, getValues, control } = useForm()
+  
   const { data: customerData, isSuccess: isSuccessCustomer } = useAllCustomerQuery(true)
   const { data: truckData, isSuccess: isSuccessTruck } = useAllTruckQuery()
 
+  const createOrderMutation = useCreateOrderQuery()
+  const {isLoading: isLoadingOrder, isSuccess: isSuccessOrder, isError, data: orderData, error} = createOrderMutation
+
   const [ products, setProducts ] = useState([])
   const [ totalWeight, setTotalWeight ] = useState(0)
+  const [ grandTotal, setGrandTotal ] = useState(0)
   const [ customerDropdown, setCustomerDropdown ] = useState([])
   const [ truckDropdown, setTruckDropdown ] = useState([])
 
+  const watchShipping = useWatch({
+    control,
+    name: 'shipping'
+  })
   
   useEffect(() => {
     if (id) {
@@ -59,24 +69,40 @@ const OrderCart = ({ id, productData }) => {
     setTruckDropdown(() => initialTruck)
   }, [truckData, isSuccessTruck])
 
-  let totalWeightVar = 0
   const handleQtyChange = (event, index) => {
     const qty = event.target.value || 0
-    const price = getValues(`transactionDetail[${index}].price`)
-    const weight = getValues(`transactionDetail[${index}].weight`)
-    const subTotal = parseInt(qty) * price
-    const qtyWeight = parseInt(qty) * weight
-    totalWeightVar += qtyWeight
+    setValue(`transactionDetail[${index}].qty`, qty)
+
+    let totalWeightVar = 0 
+    let grandTotalVar = 0
+
+    // Sum for all products
+    for (let i = 0; i < products.length; i++) {
+      const price = getValues(`transactionDetail[${i}].price`)
+      const weight = getValues(`transactionDetail[${i}].weight`)
+      const qty = getValues(`transactionDetail[${i}].qty`)
+
+      grandTotalVar += parseInt(qty) * price
+      totalWeightVar += parseInt(qty) * weight
+    }
 
     setTotalWeight(totalWeightVar)
+    setGrandTotal(grandTotalVar)
+
+    // Only sum for specific row (by index)
+    const price = getValues(`transactionDetail[${index}].price`)
+    const subTotal = parseInt(qty) * price
     
-    setValue(`transactionDetail[${index}].subTotal`, subTotal)
+    // Set value to a form that send on post
     setValue('totalWeight', totalWeightVar)
+    setValue('grandTotal', grandTotalVar)
+    setValue(`transactionDetail[${index}].subTotal`, subTotal)
     setValue(`transactionDetail[${index}].subTotalRupiah`, showNumberInRupiah(subTotal))
   }
 
   const submitForm = (data) => {
-    console.log("dataa", data)
+    console.log("dataaa", data)
+    createOrderMutation.mutate(data)
   }
 
   return (
@@ -94,6 +120,7 @@ const OrderCart = ({ id, productData }) => {
                     name='customer'
                     control={control}
                     rules={{ required: 'Customer harus diisi' }}
+                    // defaultValue={{}}
                     render={({field: {onChange, onBlur, ref, value}}) => 
                       <Select
                         onBlur={onBlur}
@@ -114,26 +141,48 @@ const OrderCart = ({ id, productData }) => {
             </div>
             <div className='w-full lg:w-6/12 lg:pl-4 mb-2'>
               <div className='relative w-full mb-3'>
-                <label className='block uppercase text-gray-600 text-xs font-bold mb-2'>
-                  Truck
-                </label>
-                <Controller
-                  name='truck'
-                  control={control}
-                  render={({field: {onChange, onBlur, ref, value}}) => 
-                    <Select
-                      onBlur={onBlur}
-                      onChange={onChange}
-                      value={value}
-                      ref={ref}
-                      options={
-                        truckDropdown
-                      }
-                    />
-                  }
-                />
+                <span className="text-gray-700">Pengiriman</span>
+                <div className="mt-2">
+                  <label className="inline-flex items-center">
+                    <input type="radio" className="form-radio" value="walkin" {...register('shipping')} defaultChecked />
+                    <span className="ml-2">Mandiri</span>
+                  </label>
+                  <label className="inline-flex items-center ml-6">
+                    <input type="radio" className="form-radio" value="delivery" {...register('shipping')} />
+                    <span className="ml-2">Pengiriman Toko</span>
+                  </label>
+                </div>
               </div>
             </div>
+            {watchShipping === 'delivery' &&
+              <div className='w-full lg:w-6/12 lg:pr-4 mb-2'>
+                <div className='relative w-full mb-3'>
+                  <div className='relative w-full mb-3'>
+                    <label className='block uppercase text-gray-600 text-xs font-bold mb-2'>
+                      Truk
+                    </label>
+                    <Controller
+                      name='truck'
+                      control={control}
+                      render={({field: {onChange, onBlur, ref, value}}) => 
+                        <Select
+                          onBlur={onBlur}
+                          onChange={onChange}
+                          value={value}
+                          ref={ref}
+                          options={
+                            truckDropdown
+                          }
+                        />
+                      }
+                    />
+                    <ErrorLabel>
+                      <ErrorMessage errors={errors} name='customer' render={({ message }) => message} />
+                    </ErrorLabel>
+                  </div>
+                </div>
+              </div>
+            }
           </div>
           <div className='w-full flex font-semibold text-gray-600'>
             <div className='w-full lg:w-5/12 p-2 border'>
@@ -175,8 +224,6 @@ const OrderCart = ({ id, productData }) => {
                       type='hidden'
                       value={product.weight}
                       className='border-0 px-3 py-2 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
-                      onChange={(event) => handleQtyChange(event, index)}
-                      placeholder='QTY'
                       autoComplete='off'
                     />
                   </div>
@@ -223,15 +270,35 @@ const OrderCart = ({ id, productData }) => {
                 </div>
               )
             })}
-            {products.length > 0 && 
-              <div className='w-full flex font-semibold text-gray-600'>
-                <div className='w-full lg:w-5/12 p-2 border-r border-l border-b'>
-                  Total Berat
-                </div>              
-                <div className='w-full lg:w-1/12 p-2 border-r border-l border-b'>
-                  {totalWeight} kg
+            {products.length > 0 &&
+              <>
+                <div className='w-full flex font-semibold text-gray-600'>
+                  <div className='w-full lg:w-5/12 p-2 border-r border-l border-b'>
+                    Total Berat
+                    <input
+                      {...register('totalWeight')}
+                      type='hidden'
+                      autoComplete='off'
+                    />
+                  </div>              
+                  <div className='w-full lg:w-1/12 p-2 border-r border-l border-b'>
+                    {totalWeight} kg
+                  </div>
                 </div>
-              </div>
+                <div className='w-full flex font-semibold text-gray-600'>
+                  <div className='w-full lg:w-5/12 p-2 border-r border-l border-b'>
+                    Grand Total
+                    <input
+                      {...register(`grandTotal`)}
+                      type='hidden'
+                      autoComplete='off'
+                    />
+                  </div>              
+                  <div className='w-full lg:w-1/12 p-2 border-r border-l border-b'>
+                    {showNumberInRupiah(grandTotal)}
+                  </div>
+                </div>
+              </>
             }
             <div className='rounded-t mb-0 py-6'>
               <div className='float-right'>
