@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 import { ErrorMessage } from '@hookform/error-message'
 import { number } from 'prop-types'
 import Select from 'react-select'
@@ -209,7 +211,7 @@ const OrderCart = ({ id, productData }) => {
                 <div className='w-full flex font-semibold text-gray-600' key={product.id}>
                   <div className='w-full lg:w-5/12 p-2 border-b border-l border-r'>
                     <input
-                      {...register(`transactionDetail[${index}].id`)}
+                      {...register(`transactionDetail[${index}].productId`)}
                       type='hidden'
                       value={product.id}
                       placeholder='QTY'

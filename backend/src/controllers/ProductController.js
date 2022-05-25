@@ -43,7 +43,7 @@ const createProduct = async (req, res) => {
       price: parseInt(req.body.price, 10),
     }
 
-    const product = productServices.create(productBody)
+    const product = await productServices.create(productBody)
 
     res.status(201).send({ product, message: 'Berhasil membuat data produk baru' })
   } catch (error) {
@@ -64,7 +64,7 @@ const updateProduct = async (req, res) => {
   } 
 
   try {
-    const product = productServices.update(productId, productBody)
+    const product = await productServices.update(productId, productBody)
 
     res.status(200).send({ product, message: 'Berhasil mengubah data produk' })
   } catch (error) {

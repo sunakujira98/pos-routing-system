@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { QueryClientProvider, QueryClient } from 'react-query'
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -15,6 +15,10 @@ function App() {
         <Routes>
           <Route path="/admin/*" element={<Crud />} />
           <Route path="/admin/order/create" exact element={<CreateOrder />} />
+          <Route
+            path="/"
+            element={<Navigate to="/admin/customer/list" replace />}
+          />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

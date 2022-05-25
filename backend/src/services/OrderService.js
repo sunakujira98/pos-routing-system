@@ -2,13 +2,13 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 const get = async () => {
-  const orders = await prisma.order.findMany()
+  const orders = await prisma.orders.findMany()
 
   return orders
 }
 
 const getById = async id => {
-  const orders = await prisma.order.findUnique({ where: { id } })
+  const orders = await prisma.orders.findUnique({ where: { id } })
 
   return orders
 }
@@ -18,24 +18,21 @@ const create = async orderData => {
     value: customerId
   }, grandTotal, totalWeight } = orderData
 
-  console.log("orderData", orderData)
-  console.log("customer")
-
   try {
-    // const order = await prisma.order.create({ 
-    //   data: { customerId, grandTotal, totalWeight } 
-    // })
-    
-    const order = await prisma.$queryRaw`INSERT INTO orders(customer_id, grand_total, total_weight, updated_at) 
-    VALUES (${customerId}, ${grandTotal}, ${totalWeight}, ${new Date()}) RETURNING id;`
+    const order = await prisma.$queryRaw`INSERT INTO orders(customer_id, grand_total, total_weight) 
+    VALUES (${customerId}, ${grandTotal}, ${totalWeight}) RETURNING id;`
 
-    console.log("order" , order)
-
-    return order
+    return order[0]
   } catch (error) {
     console.log('Error in create order service', error)
     return error
   }
+}
+
+const getDataForCompareDistance = async () => {
+  const orders = await prisma.$queryRaw`select o.id, o.total_weight, o.order_date, c.id as customer_id, c.address, c.lat_long from orders o INNER JOIN customer c ON c.id = o.customer_id where o.order_date >= (NOW() - INTERVAL '3 hours' );`
+
+  return orders
 }
 
 module.exports = { get, getById, create }

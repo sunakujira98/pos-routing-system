@@ -41,7 +41,7 @@ const createTruck = async (req, res) => {
       ...req.body
     }
 
-    const truck = truckServices.create(truckBody)
+    const truck = await truckServices.create(truckBody)
 
     res.status(201).send({ truck, message: 'Berhasil membuat data truk baru' })
   } catch (error) {
@@ -60,7 +60,7 @@ const updateTruck = async (req, res) => {
   } 
 
   try {
-    const truck = truckServices.update(truckId, truckBody)
+    const truck = await truckServices.update(truckId, truckBody)
 
     res.status(200).send({ truck, message: 'Berhasil mengubah data truk' })
   } catch (error) {

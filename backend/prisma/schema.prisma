@@ -12,50 +12,82 @@ model customer {
   address    String   @db.VarChar(255)
   lat_long   String   @db.VarChar(255)
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime @default(now())
   orders     orders[]
 }
 
 model truck {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(255)
+  id         Int         @id @default(autoincrement())
+  name       String      @db.VarChar(255)
   capacity   Int
-  vehicle_no String   @db.VarChar(30)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  vehicle_no String      @db.VarChar(30)
+  created_at DateTime    @default(now())
+  updated_at DateTime    @default(now())
+  shipments  shipments[]
 }
 
 model product {
-  id           Int            @id @default(autoincrement())
-  name         String         @db.VarChar(255)
+  id           Int             @id @default(autoincrement())
+  name         String          @db.VarChar(255)
   weight       Float
   price        Int
-  created_at   DateTime       @default(now())
-  updated_at   DateTime       @updatedAt
-  orderDetails orderDetails[]
+  created_at   DateTime        @default(now())
+  updated_at   DateTime        @default(now())
+  orderDetails order_details[]
 }
 
 model orders {
-  id           Int            @id @default(autoincrement())
+  id           Int             @id @default(autoincrement())
   customer_id  Int
-  customer     customer       @relation(fields: [customer_id], references: [id])
+  customer     customer        @relation(fields: [customer_id], references: [id])
   grand_total  Int
   total_weight Int
-  order_date   DateTime       @default(now())
-  created_at   DateTime       @default(now())
-  updated_at   DateTime       @updatedAt
-  orderDetails orderDetails[]
+  order_date   DateTime        @default(now())
+  created_at   DateTime        @default(now())
+  updated_at   DateTime        @default(now())
+  orderDetails order_details[]
+  shipments    shipments[]
 }
 
-model orderDetails {
-  id         Int      @id @default(autoincrement())
-  order_id   Int
-  order      orders   @relation(fields: [order_id], references: [id])
-  product_id Int
-  product    product  @relation(fields: [product_id], references: [id])
-  qty        Int
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+model order_details {
+  id          Int        @id @default(autoincrement())
+  order_id    Int
+  order       orders     @relation(fields: [order_id], references: [id])
+  product_id  Int
+  product     product    @relation(fields: [product_id], references: [id])
+  qty         Int
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @default(now())
+  shipments   shipments? @relation(fields: [shipmentsId], references: [id])
+  shipmentsId Int?
+}
+
+model shipments {
+  id               Int                @id @default(autoincrement())
+  order_id         Int
+  order            orders             @relation(fields: [order_id], references: [id])
+  truck_id         Int
+  truck            truck              @relation(fields: [truck_id], references: [id])
+  status           String             @db.VarChar(50)
+  shipment_date    DateTime           @default(now())
+  created_at       DateTime           @default(now())
+  updated_at       DateTime           @default(now())
+  order_details    order_details[]
+  shipment_details shipment_details[]
+}
+
+model shipment_details {
+  id                            Int       @id @default(autoincrement())
+  shipment_id                   Int
+  shipment                      shipments @relation(fields: [shipment_id], references: [id])
+  distance_from_store           Float
+  distance_from_previous_origin Float?
+  total_weight                  Float
+  sequence                      Int
+  status                        String    @db.VarChar(50)
+  order_date                    DateTime  @default(now())
+  created_at                    DateTime  @default(now())
+  updated_at                    DateTime  @default(now())
 }
 
 datasource db {

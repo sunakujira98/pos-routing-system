@@ -4,6 +4,7 @@ const truckRoutes = require('./routes/TruckRoutes')
 const productRoutes = require('./routes/ProductRoutes')
 const orderRoutes = require('./routes/OrderRoutes')
 
+require('dotenv').config({path: __dirname + '/.env'})
 const app = express()
 
 app.use(express.json())

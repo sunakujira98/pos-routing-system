@@ -42,7 +42,7 @@ const createCustomer = async (req, res) => {
       phone: String(req.body.phone)
     }
 
-    const customer = customerServices.create(customerBody)
+    const customer = await customerServices.create(customerBody)
 
     res.status(201).send({ customer, message: 'Berhasil membuat data customer baru' })
   } catch (error) {
@@ -62,7 +62,7 @@ const updateCustomer = async (req, res) => {
   } 
 
   try {
-    const customer = customerServices.update(customerId, customerBody)
+    const customer = await customerServices.update(customerId, customerBody)
 
     res.status(200).send({ customer, message: 'Berhasil mengubah data customer' })
   } catch (error) {
