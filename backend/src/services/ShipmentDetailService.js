@@ -13,11 +13,13 @@ const getById = async id => {
   return shipmentDetails
 }
 
-const create = async ( shipmentId, totalWeight, distanceFromPreviousOrigin ) => {
+const create = async ( orderId, shipmentId, totalWeight, distanceFromPreviousOrigin ) => {
+  console.log("masuk sini ga boys")
   try {
     await prisma.shipment_details.create({ data: 
       { 
         shipment_id: shipmentId, 
+        order_id: orderId,
         distance_from_store: 1, 
         total_weight: totalWeight, 
         sequence: 1, 

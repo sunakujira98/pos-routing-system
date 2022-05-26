@@ -54,9 +54,16 @@ const createOrder = async (req, res) => {
     }
     const orderDetailBody = req.body.transactionDetail
 
-    // const order = await orderServices.create(orderBody)
-    // const orderId = order.id
+    const order = await orderServices.create(orderBody)
+    const orderId = order.id
     // await orderDetailServices.create(orderId, orderDetailBody)
+
+    // const { truck: { value: truckId } } = req.body 
+    // const shipment = await shipmentServices.create(truckId)
+    // const shipmentId = shipment.id
+    // const shipmentDetail = await shipmentDetailServices.create(orderId, shipmentId, orderBody.totalWeight, 8000)
+
+    // console.log("shipmentId", shipmentId)
   
     if (shipping === 'delivery') {
       const compareOrders = await orderServices.getOrdersBelongToShipment()
@@ -94,7 +101,7 @@ const createOrder = async (req, res) => {
             const shipmentId = compareOrders[i].shipment_id
             const totalWeight = compareOrders[i].total_weight
 
-            shipmentDetailServices.create(shipmentId, totalWeight, distanceFromComparedOrigin)
+            shipmentDetailServices.create(orderId, shipmentId, totalWeight, distanceFromComparedOrigin)
             res.status(201).send({
               message: `Berhasil membuat data pesanan baru, data order tersebut digabungkan bersama pengiriman dengan id ${shipmentId}` 
             }) 
@@ -102,9 +109,8 @@ const createOrder = async (req, res) => {
         }
       } else {
         const { truck: { value: truckId } } = req.body 
-        shipmentServices.create(orderId, truckId)
+        const shipmentId = shipmentServices.create(orderId, truckId)
       }
-
     }
 
   } catch (error) {

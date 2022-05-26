@@ -30,13 +30,13 @@ const create = async orderData => {
 }
 
 const getOrdersBelongToShipment = async () => {
-  const orders = await prisma.$queryRaw`SELECT o.id, o.total_weight, o.order_date, c.id as customer_id, c.address, c.lat_long, s.id as shipment_id from orders o INNER JOIN customer c ON c.id = o.customer_id INNER JOIN shipments s ON s.order_id=o.id where o.order_date >= (NOW() - INTERVAL '3 hours' );`
+  const orders = await prisma.$queryRaw`select o.id, o.total_weight, o.order_date, c.id as customer_id, c.address, c.lat_long, sd.shipment_id as shipment_id from orders o INNER JOIN customer c ON c.id = o.customer_id INNER JOIN shipment_details sd ON sd.order_id=o.id where o.order_date >= (NOW() - INTERVAL '3 hours');`
 
   return orders
 }
 
 const getOrdersNotBelongToShipment = async () => {
-  const orders = await prisma.$queryRaw`SELECT o.id, o.total_weight, o.order_date, c.id as customer_id, c.address, c.lat_long from orders o INNER JOIN customer c ON c.id = o.customer_id LEFT JOIN shipments s ON s.order_id=o.id where o.order_date >= (NOW() - INTERVAL '3 hours' ) AND s.order_id IS NULL`
+  const orders = await prisma.$queryRaw`select o.id, o.total_weight, o.order_date, c.id as customer_id, c.address, c.lat_long from orders o INNER JOIN customer c ON c.id = o.customer_id LEFT JOIN shipment_details sd ON sd.order_id=o.id where o.order_date >= (NOW() - INTERVAL '3 hours' ) AND sd.order_id IS NULL`
 
   return orders
 }

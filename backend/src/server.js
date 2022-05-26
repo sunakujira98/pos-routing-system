@@ -3,6 +3,7 @@ const customerRoutes = require('./routes/CustomerRoutes')
 const truckRoutes = require('./routes/TruckRoutes')
 const productRoutes = require('./routes/ProductRoutes')
 const orderRoutes = require('./routes/OrderRoutes')
+const shipmentRoutes = require('./routes/ShipmentRoutes')
 
 require('dotenv').config({path: __dirname + '/.env'})
 const app = express()
@@ -13,6 +14,7 @@ app.use('/api/customer', customerRoutes)
 app.use('/api/truck', truckRoutes)
 app.use('/api/product', productRoutes)
 app.use('/api/order', orderRoutes)
+app.use('/api/shipment', shipmentRoutes)
 
 app.get('/', (req, res) => {
   res.send('API is running....')

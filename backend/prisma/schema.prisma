@@ -37,16 +37,17 @@ model product {
 }
 
 model orders {
-  id           Int             @id @default(autoincrement())
-  customer_id  Int
-  customer     customer        @relation(fields: [customer_id], references: [id])
-  grand_total  Int
-  total_weight Int
-  order_date   DateTime        @default(now())
-  created_at   DateTime        @default(now())
-  updated_at   DateTime        @default(now())
-  orderDetails order_details[]
-  shipments    shipments[]
+  id               Int                @id @default(autoincrement())
+  customer_id      Int
+  customer         customer           @relation(fields: [customer_id], references: [id])
+  grand_total      Int
+  total_weight     Int
+  order_date       DateTime           @default(now())
+  created_at       DateTime           @default(now())
+  updated_at       DateTime           @default(now())
+  orderDetails     order_details[]
+  shipments        shipments[]
+  shipment_details shipment_details[]
 }
 
 model order_details {
@@ -61,9 +62,8 @@ model order_details {
 }
 
 model shipments {
-  id               Int                @id @default(autoincrement())
-  order_id         Int
-  order            orders             @relation(fields: [order_id], references: [id])
+  id Int @id @default(autoincrement())
+
   truck_id         Int
   truck            truck              @relation(fields: [truck_id], references: [id])
   status           String             @db.VarChar(50)
@@ -71,12 +71,16 @@ model shipments {
   created_at       DateTime           @default(now())
   updated_at       DateTime           @default(now())
   shipment_details shipment_details[]
+  orders           orders?            @relation(fields: [ordersId], references: [id])
+  ordersId         Int?
 }
 
 model shipment_details {
   id                            Int       @id @default(autoincrement())
   shipment_id                   Int
   shipment                      shipments @relation(fields: [shipment_id], references: [id])
+  order_id                      Int
+  order                         orders    @relation(fields: [order_id], references: [id])
   distance_from_store           Float?
   distance_from_previous_origin Float?
   total_weight                  Float
