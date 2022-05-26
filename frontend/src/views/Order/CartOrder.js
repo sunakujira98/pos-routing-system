@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css';
+
 import { ErrorMessage } from '@hookform/error-message'
 import { number } from 'prop-types'
 import Select from 'react-select'
@@ -103,7 +102,6 @@ const OrderCart = ({ id, productData }) => {
   }
 
   const submitForm = (data) => {
-    console.log("dataaa", data)
     createOrderMutation.mutate(data)
   }
 
@@ -303,6 +301,7 @@ const OrderCart = ({ id, productData }) => {
               </>
             }
             <div className='rounded-t mb-0 py-6'>
+            {isSuccessOrder && <p>{orderData?.message}</p>}
               <div className='float-right'>
               <button
                 className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150'

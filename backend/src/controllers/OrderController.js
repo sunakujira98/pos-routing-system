@@ -6,7 +6,7 @@ const shipmentServices = require('../services/ShipmentService')
 const shipmentDetailServices = require('../services/ShipmentDetailService')
 const customerServices = require('../services/CustomerService')
 const distanceMatrixServices = require('../services/DistanceMatrixService')
-const { extractLatLong } = require('../utils/Helpers')
+const { extractLatLong, getLat, getLng } = require('../utils/Helpers')
 
 
 // @desc Get all order
@@ -69,14 +69,14 @@ const createOrder = async (req, res) => {
         const customer = await customerServices.getById(customerId)
 
         const customerLatLong = customer.lat_long
-        const customerLat = parseFloat(extractLatLong(customerLatLong)[0], 10)
-        const customerLong = parseFloat(extractLatLong(customerLatLong)[1], 10)
+        const customerLat = getLat(customerLatLong)
+        const customerLong = getLng(customerLatLong)
 
         const orderLatLongArr = []
         compareOrders.forEach(order => {
           const orderLatLong = order.lat_long
-          const orderLat = parseFloat(extractLatLong(orderLatLong)[0], 10)
-          const orderLong = parseFloat(extractLatLong(orderLatLong)[1], 10)
+          const orderLat = getLat(orderLatLong)
+          const orderLong = getLng(orderLatLong)
 
           orderLatLongArr.push({
             lat: orderLat,
@@ -94,9 +94,10 @@ const createOrder = async (req, res) => {
             const shipmentId = compareOrders[i].shipment_id
             const totalWeight = compareOrders[i].total_weight
 
-            console.log("hajar sini")
             shipmentDetailServices.create(shipmentId, totalWeight, distanceFromComparedOrigin)
-            return 
+            res.status(201).send({
+              message: `Berhasil membuat data pesanan baru, data order tersebut digabungkan bersama pengiriman dengan id ${shipmentId}` 
+            }) 
           }
         }
       } else {
@@ -106,7 +107,6 @@ const createOrder = async (req, res) => {
 
     }
 
-    res.status(201).send({ order, message: 'Berhasil membuat data pesanan baru' })
   } catch (error) {
     console.error('Error createOrder controller', error)
     res.status(500).send('There is an error when processing createOrder')

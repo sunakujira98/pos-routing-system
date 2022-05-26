@@ -2,9 +2,6 @@ const {Client} = require("@googlemaps/google-maps-services-js");
 const client = new Client();
 
 const originStore = { lat: -6.917195, lng: 107.600941 }
-const origin1 = { lat: -6.917195, lng: 107.600941 };
-const destinationA = { lat: -6.917238, lng: 107.602200 }
-const destinationB = { lat: -6.957636, lng: 107.598232 }
 
 /* 
   origin : array,
