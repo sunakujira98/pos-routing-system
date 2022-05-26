@@ -29,10 +29,16 @@ const create = async orderData => {
   }
 }
 
-const getDataForCompareDistance = async () => {
-  const orders = await prisma.$queryRaw`select o.id, o.total_weight, o.order_date, c.id as customer_id, c.address, c.lat_long from orders o INNER JOIN customer c ON c.id = o.customer_id where o.order_date >= (NOW() - INTERVAL '3 hours' );`
+const getOrdersBelongToShipment = async () => {
+  const orders = await prisma.$queryRaw`SELECT o.id, o.total_weight, o.order_date, c.id as customer_id, c.address, c.lat_long, s.id as shipment_id from orders o INNER JOIN customer c ON c.id = o.customer_id INNER JOIN shipments s ON s.order_id=o.id where o.order_date >= (NOW() - INTERVAL '3 hours' );`
 
   return orders
 }
 
-module.exports = { get, getById, create }
+const getOrdersNotBelongToShipment = async () => {
+  const orders = await prisma.$queryRaw`SELECT o.id, o.total_weight, o.order_date, c.id as customer_id, c.address, c.lat_long from orders o INNER JOIN customer c ON c.id = o.customer_id LEFT JOIN shipments s ON s.order_id=o.id where o.order_date >= (NOW() - INTERVAL '3 hours' ) AND s.order_id IS NULL`
+
+  return orders
+}
+
+module.exports = { get, getById, create, getOrdersBelongToShipment, getOrdersNotBelongToShipment }

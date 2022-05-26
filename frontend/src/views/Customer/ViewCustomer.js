@@ -18,7 +18,7 @@ const columnsHeader = [
   },
   {
     Header: 'Latitude dan Longitude',
-    accessor: 'latLong',
+    accessor: 'lat_long',
   },
   {
     width: 300,

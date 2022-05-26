@@ -1,10 +1,12 @@
+const {Client} = require("@googlemaps/google-maps-services-js");
+
 const orderServices = require('../services/OrderService')
 const orderDetailServices = require('../services/OrderDetailService')
 const shipmentServices = require('../services/ShipmentService')
 const shipmentDetailServices = require('../services/ShipmentDetailService')
-const {Client} = require("@googlemaps/google-maps-services-js");
-
+const customerServices = require('../services/CustomerService')
 const distanceMatrixServices = require('../services/DistanceMatrixService')
+const { extractLatLong } = require('../utils/Helpers')
 
 
 // @desc Get all order
@@ -52,35 +54,56 @@ const createOrder = async (req, res) => {
     }
     const orderDetailBody = req.body.transactionDetail
 
-    const order = await orderServices.create(orderBody)
-    const orderId = order.id
-    await orderDetailServices.create(orderId, orderDetailBody)
+    // const order = await orderServices.create(orderBody)
+    // const orderId = order.id
+    // await orderDetailServices.create(orderId, orderDetailBody)
   
     if (shipping === 'delivery') {
-      const origin1 = { lat: -6.917195, lng: 107.600941 };
-      const destinationA = { lat: -6.917238, lng: 107.602200 }
-      const destinationB = { lat: -6.957636, lng: 107.598232 }
+      const compareOrders = await orderServices.getOrdersBelongToShipment()
 
-      // const client = new Client();
-      // client.distancematrix({
-      //   params: {
-      //     key: process.env.GOOGLE_MATRIX_KEY,
-      //     origins: [origin1],
-      //     destinations: [destinationA, destinationB],
-      //     travelMode: 'DRIVING',
-      //     unitSystem: 1,
-      //     avoidHighways: false,
-      //     avoidTolls: false,
-      //   }
-      // }).then((r) => {
-      //   console.log(r.data.rows[0]);
-      // })
-      // .catch((e) => {
-      //   console.log(e.response.data.error_message);
-      // });
+      if (compareOrders.length > 0) {
+        // get the customer's detail to get lat_long
+        console.log("compareOrders", compareOrders)
 
-      const { truck: { value: truckId } } = req.body 
-      shipmentServices.create(orderId, truckId)
+        const customerId = parseInt(req.body.customer.value, 10)
+        const customer = await customerServices.getById(customerId)
+
+        const customerLatLong = customer.lat_long
+        const customerLat = parseFloat(extractLatLong(customerLatLong)[0], 10)
+        const customerLong = parseFloat(extractLatLong(customerLatLong)[1], 10)
+
+        const orderLatLongArr = []
+        compareOrders.forEach(order => {
+          const orderLatLong = order.lat_long
+          const orderLat = parseFloat(extractLatLong(orderLatLong)[0], 10)
+          const orderLong = parseFloat(extractLatLong(orderLatLong)[1], 10)
+
+          orderLatLongArr.push({
+            lat: orderLat,
+            lng: orderLong
+          })
+        });
+
+        const distanceMatrix = await distanceMatrixServices.getDistanceMatrix(orderLatLongArr, [{lat: customerLat, lng: customerLong}] )
+        const distanceArray = distanceMatrix.rows[0].elements
+
+        for (let i = 0; i < distanceArray.length; i++) {
+          const distanceFromComparedOrigin = distanceArray[i].distance.value
+
+          if (distanceFromComparedOrigin < 2000) {
+            const shipmentId = compareOrders[i].shipment_id
+            const totalWeight = compareOrders[i].total_weight
+
+            console.log("hajar sini")
+            shipmentDetailServices.create(shipmentId, totalWeight, distanceFromComparedOrigin)
+            return 
+          }
+        }
+      } else {
+        const { truck: { value: truckId } } = req.body 
+        shipmentServices.create(orderId, truckId)
+      }
+
     }
 
     res.status(201).send({ order, message: 'Berhasil membuat data pesanan baru' })

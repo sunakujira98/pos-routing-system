@@ -50,16 +50,14 @@ model orders {
 }
 
 model order_details {
-  id          Int        @id @default(autoincrement())
-  order_id    Int
-  order       orders     @relation(fields: [order_id], references: [id])
-  product_id  Int
-  product     product    @relation(fields: [product_id], references: [id])
-  qty         Int
-  created_at  DateTime   @default(now())
-  updated_at  DateTime   @default(now())
-  shipments   shipments? @relation(fields: [shipmentsId], references: [id])
-  shipmentsId Int?
+  id         Int      @id @default(autoincrement())
+  order_id   Int
+  order      orders   @relation(fields: [order_id], references: [id])
+  product_id Int
+  product    product  @relation(fields: [product_id], references: [id])
+  qty        Int
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
 }
 
 model shipments {
@@ -72,7 +70,6 @@ model shipments {
   shipment_date    DateTime           @default(now())
   created_at       DateTime           @default(now())
   updated_at       DateTime           @default(now())
-  order_details    order_details[]
   shipment_details shipment_details[]
 }
 
@@ -80,12 +77,11 @@ model shipment_details {
   id                            Int       @id @default(autoincrement())
   shipment_id                   Int
   shipment                      shipments @relation(fields: [shipment_id], references: [id])
-  distance_from_store           Float
+  distance_from_store           Float?
   distance_from_previous_origin Float?
   total_weight                  Float
   sequence                      Int
   status                        String    @db.VarChar(50)
-  order_date                    DateTime  @default(now())
   created_at                    DateTime  @default(now())
   updated_at                    DateTime  @default(now())
 }

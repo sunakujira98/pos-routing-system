@@ -14,7 +14,7 @@ const columnsHeader = [
   },
   {
     Header: 'No Kendaraan',
-    accessor: 'vehicleNo',
+    accessor: 'vehicle_no',
   },
   {
     width: 300,
