@@ -5,10 +5,6 @@ import { useAllShipmentQuery } from '../../hooks/useShipmentQuery'
 
 const columnsHeader = [
   {
-    Header: 'Order Id',
-    accessor: 'order.id',
-  },
-  {
     Header: 'Truk Pengiriman',
     accessor: 'truck.name',
   },

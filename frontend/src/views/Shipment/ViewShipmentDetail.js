@@ -6,29 +6,42 @@ import { useShipmentByIdQuery } from '../../hooks/useShipmentQuery'
 
 const columnsHeader = [
   {
-    Header: 'Order Id',
-    accessor: 'order.id',
+    Header: 'Id Order',
+    accessor: 'order_id',
   },
   {
-    Header: 'Truk Pengiriman',
-    accessor: 'truck.name',
+    Header: 'Jarak dari toko',
+    accessor: 'distance_from_store',
+    Cell: ({ cell }) => (
+      <p>
+        {cell.row.values.distance_from_store} meter
+      </p>
+    )
+  },
+  {
+    Header: 'Jarak dari destinasi sebelumnya',
+    accessor: 'distance_from_previous_origin',
+    Cell: ({ cell }) => (
+      <p>
+        {cell.row.values.distance_from_previous_origin} meter
+      </p>
+    )
   },
   {
     Header: 'Status',
     accessor: 'status',
   },
   {
-    Header: 'Tanggal Pengiriman',
-    accessor: 'shipment_date',
+    Header: 'Urutan',
+    accessor: 'sequence',
   },
   {
-    width: 300,
-    Header: "Aksi",
-    accessor: "id",
+    Header: 'Berat pengiriman',
+    accessor: 'total_weight',
     Cell: ({ cell }) => (
-      <a href={`/admin/shipment/view/${cell.row.values.id}`} value={cell.row.values.id} className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150' target='_blank' rel='noreferrer'>
-        Lihat Data  
-      </a>
+      <p>
+        {cell.row.values.total_weight} kg
+      </p>
     )
   }
 ]
@@ -43,7 +56,7 @@ const ViewShipmentDetail = () => {
     const [ tableData, setTableData ] = useState(null);
   
     useEffect(() => {
-      setTableData(data);
+      setTableData(data?.shipment_details);
     }, [isSuccess, data])
 
     if (isLoading || !tableData) {
