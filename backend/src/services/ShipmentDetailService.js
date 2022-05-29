@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client')
+const { getOrderById } = require('../controllers/OrderController')
 const prisma = new PrismaClient()
 
 const get = async () => {
@@ -13,16 +14,23 @@ const getById = async id => {
   return shipmentDetails
 }
 
-const create = async ( orderId, shipmentId, totalWeight, distanceFromPreviousOrigin ) => {
-  console.log("masuk sini ga boys")
+const getByOrderId = async orderId => {
+  const shipmentDetails = await prisma.shipment_details.findFirst({ where: { order_id: orderId } })
+
+  return shipmentDetails
+}
+
+const create = async ({
+  orderId, shipmentId, totalWeight, distanceFromPreviousOrigin, distanceFromStore, sequence
+}) => {
   try {
     await prisma.shipment_details.create({ data: 
       { 
         shipment_id: shipmentId, 
         order_id: orderId,
-        distance_from_store: 1, 
+        distance_from_store: distanceFromStore, 
         total_weight: totalWeight, 
-        sequence: 1, 
+        sequence: sequence, 
         status: 'READY_FOR_DELIVERY', 
         distance_from_previous_origin: distanceFromPreviousOrigin
       } 
@@ -33,4 +41,42 @@ const create = async ( orderId, shipmentId, totalWeight, distanceFromPreviousOri
   }
 }
 
-module.exports = { get, getById, create }
+const updateSequence = async (orderId, sequence) => {
+  const sd = await getByOrderId(orderId)
+
+  try {
+    const shipment = await prisma.shipment_details.update({
+      where: { id: sd.id },
+      data: { 
+        sequence
+      }
+    })
+
+    return shipment
+  } catch (error) {
+    console.error('Error in update shipment service', error)
+    return error
+  }
+}
+
+
+const updateDistance = async (orderId, distanceFromStore, distanceFromPreviousOrigin) => {
+  const sd = await getByOrderId(orderId)
+
+  try {
+    const shipment = await prisma.shipment_details.update({
+      where: { id: sd.id },
+      data: { 
+        distance_from_store: distanceFromStore,
+        distance_from_previous_origin: distanceFromPreviousOrigin 
+      }
+    })
+
+    return shipment
+  } catch (error) {
+    console.error('Error in update shipment service', error)
+    return error
+  }
+}
+
+module.exports = { get, getById, getByOrderId, create, updateSequence, updateDistance }

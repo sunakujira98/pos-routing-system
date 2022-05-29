@@ -32,7 +32,7 @@ const update = async (id, truckData) => {
   try {
     const truck = await prisma.truck.update({
       where: { id },
-      data: { name, capacity, vehicleNo }
+      data: { name, capacity, vehicle_no: vehicleNo }
     })
 
     return truck

@@ -1,18 +1,18 @@
 const {Client} = require("@googlemaps/google-maps-services-js");
 const client = new Client();
 
-const originStore = { lat: -6.917195, lng: 107.600941 }
+const originStore = [{ lat: -6.917195, lng: 107.600941 }]
 
 /* 
   origin : array,
   destination: array
 */
-const getDistanceMatrix = async (origin, destination) => {
+const getDistanceMatrix = async (origin, destination, shipFromStore) => {
   try {
     const distanceMatrix = await client.distancematrix({
       params: {
         key: process.env.GOOGLE_MATRIX_KEY,
-        origins: origin,
+        origins: shipFromStore ? originStore : origin,
         destinations: destination,
         travelMode: 'DRIVING',
         unitSystem: 1,

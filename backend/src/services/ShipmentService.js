@@ -19,8 +19,6 @@ const getById = async id => {
     },
   )
 
-  console.log("shipmentssssssss", shipments)
-
   return shipments
 }
 
@@ -36,6 +34,10 @@ const create = async (truckId) => {
     console.log('Error in create shipment service', error)
     return error
   }
+}
+
+const getShipmentByOrderId = async (orderId) => {
+  
 }
 
 module.exports = { get, getById, create }
