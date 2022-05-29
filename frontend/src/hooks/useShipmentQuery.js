@@ -1,5 +1,5 @@
-import { useQuery } from 'react-query'
-import { getAllShipment, getShipmentById } from '../services/shipment'
+import { useQuery, useMutation } from 'react-query'
+import { getAllShipment, getShipmentById, updateStatus } from '../services/shipment'
 
 export const useAllShipmentQuery = () => {
   const query = useQuery(['all-shipment'], async () => {
@@ -17,4 +17,13 @@ export const useShipmentByIdQuery = (id) => {
   })
 
   return query
+}
+
+export const useUpdateStatusShipmentQuery = (id) => {
+  const mutation = useMutation(async (status) => {
+    const response = await updateStatus(id, status)
+    return response?.data
+  })
+
+  return mutation
 }

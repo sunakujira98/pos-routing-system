@@ -15,7 +15,17 @@ const getById = async id => {
   const shipments = await prisma.shipments.findUnique(
     { 
       where: { id },
-      include: { shipment_details: true } 
+      include: { 
+        shipment_details: {
+          include: {
+            order: {
+              include: {
+                customer: true
+              }
+            }
+          }
+        }
+       } 
     },
   )
 
@@ -36,8 +46,19 @@ const create = async (truckId) => {
   }
 }
 
-const getShipmentByOrderId = async (orderId) => {
-  
+const updateStatus = async (id, status) => {
+  try {
+    const shipment = await prisma.shipments.update({
+      where: { id },
+      data: { 
+        status
+      }
+    })
+    return shipment
+  } catch (error) {
+    console.error('Error in update shipment service', error)
+    return error
+  }
 }
 
-module.exports = { get, getById, create }
+module.exports = { get, getById, create, updateStatus }

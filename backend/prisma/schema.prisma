@@ -46,7 +46,6 @@ model orders {
   created_at       DateTime           @default(now())
   updated_at       DateTime           @default(now())
   orderDetails     order_details[]
-  shipments        shipments[]
   shipment_details shipment_details[]
 }
 
@@ -71,8 +70,6 @@ model shipments {
   created_at       DateTime           @default(now())
   updated_at       DateTime           @default(now())
   shipment_details shipment_details[]
-  orders           orders?            @relation(fields: [ordersId], references: [id])
-  ordersId         Int?
 }
 
 model shipment_details {

@@ -36,7 +36,7 @@ const create = async ({
       } 
     })
   } catch (error) {
-    console.log('Error in create shipment details service', error)
+    console.log('Error in create shipment_details service', error)
     return error
   }
 }
@@ -54,7 +54,7 @@ const updateSequence = async (orderId, sequence) => {
 
     return shipment
   } catch (error) {
-    console.error('Error in update shipment service', error)
+    console.error('Error in update shipment_details service', error)
     return error
   }
 }
@@ -74,9 +74,20 @@ const updateDistance = async (orderId, distanceFromStore, distanceFromPreviousOr
 
     return shipment
   } catch (error) {
-    console.error('Error in update shipment service', error)
+    console.error('Error in update shipment_details service', error)
     return error
   }
 }
 
-module.exports = { get, getById, getByOrderId, create, updateSequence, updateDistance }
+const updateStatus = async (shipmentId, status) => {
+  try {
+    const shipment = await prisma.$queryRaw`UPDATE shipment_details SET status=${status} WHERE shipment_id = ${shipmentId}`
+
+    return shipment
+  } catch (error) {
+    console.error('Error in update shipment_details service', error)
+    return error
+  }
+}
+
+module.exports = { get, getById, getByOrderId, create, updateSequence, updateDistance, updateStatus }

@@ -11,3 +11,9 @@ export const getShipmentById = (id) => {
 
   return axios.get(url)
 }
+
+export const updateStatus = (id, status) => {
+  const url = `/api/shipment/${id}`
+
+  return axios.put(url, status)
+}

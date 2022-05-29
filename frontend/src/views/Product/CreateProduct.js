@@ -1,6 +1,5 @@
 import React from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import CurrencyInput from 'react-currency-input-field';
+import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'

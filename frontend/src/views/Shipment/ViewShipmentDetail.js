@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 import TableInstance from '../../components/Table/TableInstance'
-import { useShipmentByIdQuery } from '../../hooks/useShipmentQuery'
+import { useShipmentByIdQuery, useUpdateStatusShipmentQuery } from '../../hooks/useShipmentQuery'
 
 const columnsHeader = [
   {
@@ -28,6 +30,10 @@ const columnsHeader = [
     )
   },
   {
+    Header: 'Alamat tujuan',
+    accessor: 'order.customer.address'
+  },
+  {
     Header: 'Status',
     accessor: 'status',
   },
@@ -49,6 +55,16 @@ const columnsHeader = [
 const ViewShipmentDetail = () => {
   const { id } = useParams();
 
+  const updateStatusShipmentMutation = useUpdateStatusShipmentQuery(id)
+  const { 
+    isLoading: isLoadingUpdateShipment, 
+    isSuccess: isSuccessUpdateShipment, 
+    isError: isErrorUpdateShipment, 
+    data: dataUpdateShipment, 
+    error: errorUpdateShipment
+  } = updateStatusShipmentMutation
+
+  console.log("updateStatusShipmentMutation", updateStatusShipmentMutation)
 
   const TableQuery = () => {
     const { data, isLoading, isSuccess } = useShipmentByIdQuery(id)
@@ -71,6 +87,8 @@ const ViewShipmentDetail = () => {
   return (
     <div className='relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded'>
       <div className='rounded-t mb-0 px-4 py-3 border-0'>
+        {isSuccessUpdateShipment && toast.success(dataUpdateShipment?.message, {toastId: "unique-random-text-xAu9C9-"})}
+        {isErrorUpdateShipment && toast.error(errorUpdateShipment?.message)}
         <div className='flex flex-wrap items-center'>
           <div className='relative w-full px-4 max-w-full flex-grow flex-1'>
             <h3 className='font-semibold text-lg'>
@@ -80,6 +98,15 @@ const ViewShipmentDetail = () => {
         </div>
         <div className='mt-4'>
           <TableQuery />
+        </div>
+        <div className='float-left'>
+          <button className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none mr-1' onClick={() => updateStatusShipmentMutation.mutate({status: 'OUT_FOR_DELIVERY'})}>
+            Kirim Pesanan  
+          </button>
+
+          <button className='bg-orange-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none mr-1' onClick={() => updateStatusShipmentMutation.mutate({status: 'SHIPMENT_DONE'})}>
+            Selesaikan Pengiriman
+          </button>
         </div>
       </div>
     </div>

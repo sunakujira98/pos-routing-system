@@ -1,4 +1,5 @@
 const shipmentServices = require('../services/ShipmentService')
+const shipmentDetailServices = require('../services/ShipmentDetailService')
 
 // @desc Get all shipment
 // @route GET /api/shipment
@@ -33,7 +34,25 @@ const getShipmentById = async (req, res) => {
   }
 }
 
+// @desc Update a shipment status by id
+// @route PUT /api/shipment/:id
+const updateShipment = async (req, res) => {
+  const { id } = req.params
+  const { status } = req.body
+
+  try {
+    const shipment = await shipmentServices.updateStatus(parseInt(id, 10), status)
+    await shipmentDetailServices.updateStatus(parseInt(id, 10), status)
+
+    res.status(200).send({ shipment, message: `Berhasil mengubah status pengiriman dengan id ${id}` })
+  } catch (error) {
+    logger.error('Error updateShipment controller', logger.error(error))
+    res.status(500).send(`Terdapat error saat mengubah statue pengiriman ${id}`)
+  }
+}
+
 module.exports = {
   getShipments,
-  getShipmentById
+  getShipmentById,
+  updateShipment
 }
