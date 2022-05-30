@@ -91,9 +91,9 @@ const createOrder = async (req, res) => {
       const customerLong = getLng(customerLatLong)
       const customerLatLongArr = [{lat: customerLat, lng: customerLong}]
       
-      const nearestOrder = []
-      const min = Infinity
+      let max = Infinity
       let nearestOrderIndex = 0
+      
       // to compare with current orders
       for (let i = 0; i < compareOrders.length; i++) {
         const currentOrderLatLong = compareOrders[i].lat_long
@@ -103,14 +103,18 @@ const createOrder = async (req, res) => {
 
         const dMatrix = await distanceMatrixServices.getDistanceMatrix(customerLatLongArr, currentOrderLatLongArr, false)
         const distanceArray = dMatrix.rows[0].elements[0]
+        console.log("distanceArray", distanceArray)
 
-        if (distanceArray.distance.value < min) {
+        if (distanceArray.distance.value < max) {
+          max = distanceArray.distance.value
           nearestOrderIndex = i
         }
       }
 
+      console.log("compareOrders[nearestOrderIndex]", compareOrders[nearestOrderIndex])
+
       // append with orders, change sequence, etc
-      if (compareOrders[nearestOrderIndex] !== null > 0) {
+      if (compareOrders[nearestOrderIndex] !== undefined) {
         // previous order
         const orderLatLongArr = []
         
