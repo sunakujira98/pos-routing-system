@@ -32,6 +32,27 @@ const getById = async id => {
   return shipments
 }
 
+const getByTruckId = async truckId => {
+  const shipments = await prisma.shipments.findUnique(
+    { 
+      where: { truck_id: truckId },
+      include: { 
+        shipment_details: {
+          include: {
+            order: {
+              include: {
+                customer: true
+              }
+            }
+          }
+        }
+       } 
+    },
+  )
+
+  return shipments
+}
+
 const create = async (truckId) => {
   const status = 'NOT_SEND'
 
@@ -61,4 +82,4 @@ const updateStatus = async (id, status) => {
   }
 }
 
-module.exports = { get, getById, create, updateStatus }
+module.exports = { get, getById, getByTruckId, create, updateStatus }

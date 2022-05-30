@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from 'react-query'
 import { getAllOrder, createOrder, getOrderById } from '../services/order'
 
-export const useAllCustomerQuery = () => {
-  const query = useQuery(['all-customer'], async () => {
+export const useAllOrderQuery = () => {
+  const query = useQuery(['all-order'], async () => {
     const response = await getAllOrder()
     return response?.data
   })

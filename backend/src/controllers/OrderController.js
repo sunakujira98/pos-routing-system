@@ -131,6 +131,7 @@ const createOrder = async (req, res) => {
 
         // compare most far with the 2nd furthest 
         if (distanceArrayMap.length > 1) {
+          const shipmentId = compareOrders[0].shipment_id
           const mostFarObj = distanceArrayMap[distanceArrayMap.length - 1] 
           const secondMostFarObj = distanceArrayMap[distanceArrayMap.length - 2]
 
@@ -148,7 +149,7 @@ const createOrder = async (req, res) => {
               totalWeight: orderBody.totalWeight
             })
 
-            res.status(201).send({ message: `Berhasil membuat data pesanan baru, data order tersebut menggunakan pengiriman baru dengan id ${shipmentId}` }) 
+            res.status(201).send({ message: `Berhasil membuat data order baru dengan pengiriman baru dikarenakan jarak terlalu jauh dan arah mata angin berbeda` }) 
           } 
           else {
             const shipmentId = compareOrders[0].shipment_id // for now hardcode to index 0
@@ -213,8 +214,12 @@ const createOrder = async (req, res) => {
           shipFromStore: true,
           totalWeight: orderBody.totalWeight
         })
+
+        res.status(201).send({ message: 'Berhasil membuat data order baru dengan pengiriman baru' }) 
       }
     }
+
+    res.status(201).send({ message: 'Berhasil membuat data order baru' }) 
 
   } catch (error) {
     console.error('Error createOrder controller', error)

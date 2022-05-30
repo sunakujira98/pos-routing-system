@@ -9,7 +9,7 @@ const SelectProduct = ({ data, setProductId }) => {
   }
 
   return (
-    <div className='relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-red-500 py-5 border-0'>
+    <div className='relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-md bg-gray-300 py-5 border-0 my-5'>
       <div className='flex-auto px-4 lg:px-10 py-5'>
         <div className='flex flex-wrap'>
           <div className='w-full lg:w-6/12 lg:pr-4 mb-2'>

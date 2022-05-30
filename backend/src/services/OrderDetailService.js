@@ -13,10 +13,6 @@ const getById = async id => {
   return orderDetails
 }
 
-// const getByOrderId = async orderId => {
-//   const 
-// }
-
 const create = async (orderId, orderDetailData) => {
 
   try {

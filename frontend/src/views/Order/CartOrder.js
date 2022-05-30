@@ -106,7 +106,7 @@ const OrderCart = ({ id, productData }) => {
   }
 
   return (
-    <div className='relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-red-500 py-5 border-0'>
+    <div className='relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-md bg-gray-300 py-5 border-0 my-5'>
       <form onSubmit={handleSubmit(submitForm)}>
         <div className='flex-auto px-4 lg:px-10 py-5'>
           <div className='flex flex-wrap'>
@@ -120,7 +120,6 @@ const OrderCart = ({ id, productData }) => {
                     name='customer'
                     control={control}
                     rules={{ required: 'Customer harus diisi' }}
-                    // defaultValue={{}}
                     render={({field: {onChange, onBlur, ref, value}}) => 
                       <Select
                         onBlur={onBlur}
@@ -164,6 +163,7 @@ const OrderCart = ({ id, productData }) => {
                     <Controller
                       name='truck'
                       control={control}
+                      rules={{ required: 'Truck harus diisi' }}
                       render={({field: {onChange, onBlur, ref, value}}) => 
                         <Select
                           onBlur={onBlur}
@@ -177,7 +177,7 @@ const OrderCart = ({ id, productData }) => {
                       }
                     />
                     <ErrorLabel>
-                      <ErrorMessage errors={errors} name='customer' render={({ message }) => message} />
+                      <ErrorMessage errors={errors} name='truck' render={({ message }) => message} />
                     </ErrorLabel>
                   </div>
                 </div>

@@ -45,7 +45,7 @@ model orders {
   order_date       DateTime           @default(now())
   created_at       DateTime           @default(now())
   updated_at       DateTime           @default(now())
-  orderDetails     order_details[]
+  order_details    order_details[]
   shipment_details shipment_details[]
 }
 
@@ -85,6 +85,26 @@ model shipment_details {
   status                        String    @db.VarChar(50)
   created_at                    DateTime  @default(now())
   updated_at                    DateTime  @default(now())
+}
+
+model roles {
+  id Int @id @default(autoincrement())
+
+  name       String   @db.VarChar(50)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  users      users[]
+}
+
+model users {
+  id Int @id @default(autoincrement())
+
+  role_id    Int
+  role       roles    @relation(fields: [role_id], references: [id])
+  username   String   @unique
+  password   String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
 }
 
 datasource db {

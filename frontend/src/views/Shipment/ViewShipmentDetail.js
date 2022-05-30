@@ -64,8 +64,6 @@ const ViewShipmentDetail = () => {
     error: errorUpdateShipment
   } = updateStatusShipmentMutation
 
-  console.log("updateStatusShipmentMutation", updateStatusShipmentMutation)
-
   const TableQuery = () => {
     const { data, isLoading, isSuccess } = useShipmentByIdQuery(id)
 

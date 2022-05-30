@@ -17,7 +17,7 @@ const CreateOrder = () => {
   if (isLoading) return <p>Loading...</p>
 
   return (
-    <div className='flex flex-wrap'>
+    <div className='flex flex-wrap min-h-screen bg-gray-100'>
       <div className='w-full lg:w-7/12 px-4'>
         <CartOrder id={id} productData={data} />
       </div>
