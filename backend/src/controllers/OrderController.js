@@ -119,12 +119,21 @@ const createOrder = async (req, res) => {
         const distanceArray = dMatrix.rows[0].elements
 
         // origins are from store
-        const distanceArrayMap = distanceArray.map((obj, index) => ({...obj, orderId: orderLatLongArr[index].orderId}))
+        const distanceArrayMap = distanceArray.map((obj, index) => ({
+          ...obj, 
+          orderId: orderLatLongArr[index].orderId, 
+          lat: orderLatLongArr[index].lat,
+          lng: orderLatLongArr[index].lng
+        }))
+
         console.log("distanceArrayMap before sort", distanceArrayMap)
         distanceArrayMap.sort(compare)
 
         console.log("distanceArrayMap", distanceArrayMap)
-        console.log("orderLatLongArr", orderLatLongArr)
+
+        let latOrigin = -6.917195
+        let lngOrigin = 107.600941
+        const cardinalDirections = []
 
         // compare most far with the 2nd furthest 
         if (distanceArrayMap.length > 1) {
@@ -133,11 +142,8 @@ const createOrder = async (req, res) => {
           const secondMostFarObj = distanceArrayMap[distanceArrayMap.length - 2]
 
           const distanceBetweenTwo = Math.abs(mostFarObj.distance.value - secondMostFarObj.distance.value)
-
-          if (distanceBetweenTwo > 2000) {
-            // insert to new shipment id
-            console.log("distanceBetweenTwo", distanceBetweenTwo)
-
+          
+          if (distanceBetweenTwo > 3000) {
             await createNewShipment({
               orderId,
               truckId,
@@ -146,7 +152,7 @@ const createOrder = async (req, res) => {
               totalWeight: orderBody.totalWeight
             })
 
-            res.status(201).send({ message: `Berhasil membuat data order baru dengan pengiriman baru dikarenakan jarak terlalu jauh dan arah mata angin berbeda` }) 
+            res.status(201).send({ message: 'Berhasil membuat data order baru dengan pengiriman baru dikarenakan jarak terlalu jauh dengan pengiriman saat ini' }) 
           } 
           else {
             const shipmentId = compareOrders[0].shipment_id // for now hardcode to index 0
@@ -172,29 +178,72 @@ const createOrder = async (req, res) => {
                 await shipmentDetailServices.updateSequence(orderIdData, sequence)
                 await shipmentDetailServices.updateDistance(orderIdData, distanceFromStore, 0)
               } else {
-                const prevOrderShipment = await orderServices.getOrdersBelongToShipmentByOrderId(distanceArrayMap[i-1].orderId)
-                const currentOrderShipment = await orderServices.getOrdersBelongToShipmentByOrderId(distanceArrayMap[i].orderId)
-
-                if (i === distanceArrayMap.length - 1) {
-                  sequence = distanceArrayMap.length
-                } else {
-                  sequence = i
+                lat1 = latOrigin;
+                lon1 = lngOrigin;
+                var lat2 = distanceArrayMap[i].lat;
+                var lon2 = distanceArrayMap[i].lng;
+            
+                lat1 = lat1 * Math.PI / 180;
+                lat2 = lat2 * Math.PI / 180;
+                var dLon = (lon2-lon1) * Math.PI / 180;
+                var y = Math.sin(dLon) * Math.cos(lat2);
+                var x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+            
+                var bearing = Math.atan2(y, x) * 180 / Math.PI;
+            
+                if (bearing < 0) {
+                  bearing = bearing + 360;
                 }
+            
+                bearing = bearing.toFixed(0);
+            
+                var bearings = ["Timur Laut", "Timur", "Tenggara", "Selatan", "Barat Daya", "Barat", "Barat Laut", "Utara"];
+            
+                let degree = bearing - 22.5;
+                if (degree < 0) degree += 360;
+                degree = parseInt(degree / 45);
+            
+                cardinalDirections.push(bearings[degree])
 
-                const latPrev = getLat(prevOrderShipment.lat_long)
-                const lngPrev = getLng(prevOrderShipment.lat_long)
-                const latLangPrev = [{lat: latPrev, lng: lngPrev}]
-    
-                const latCurr = getLat(currentOrderShipment.lat_long)
-                const lngCurr = getLng(currentOrderShipment.lat_long)
-                const latLangCurr = [{lat: latCurr, lng: lngCurr}]
-    
-                const dMatrixFromPrev = await distanceMatrixServices.getDistanceMatrix(latLangPrev, latLangCurr, false)
-                const distanceFromPrev = dMatrixFromPrev.rows[0].elements[0].distance.value
-                const distanceFromStore = distanceArrayMap[i].distance.value
-    
-                await shipmentDetailServices.updateSequence(orderIdData, i+1)
-                await shipmentDetailServices.updateDistance(orderIdData, distanceFromStore, distanceFromPrev)
+                if (cardinalDirections.length >= 2) {
+                  const isSameWayDirection = cardinalDirections[i] === cardinalDirections[i-1]
+                  if (isSameWayDirection) {
+                    const prevOrderShipment = await orderServices.getOrdersBelongToShipmentByOrderId(distanceArrayMap[i-1].orderId)
+                    const currentOrderShipment = await orderServices.getOrdersBelongToShipmentByOrderId(distanceArrayMap[i].orderId)
+
+                    if (i === distanceArrayMap.length - 1) {
+                      sequence = distanceArrayMap.length
+                    } else {
+                      sequence = i
+                    }
+
+                    const latPrev = getLat(prevOrderShipment.lat_long)
+                    const lngPrev = getLng(prevOrderShipment.lat_long)
+                    const latLangPrev = [{lat: latPrev, lng: lngPrev}]
+        
+                    const latCurr = getLat(currentOrderShipment.lat_long)
+                    const lngCurr = getLng(currentOrderShipment.lat_long)
+                    const latLangCurr = [{lat: latCurr, lng: lngCurr}]
+        
+                    const dMatrixFromPrev = await distanceMatrixServices.getDistanceMatrix(latLangPrev, latLangCurr, false)
+                    const distanceFromPrev = dMatrixFromPrev.rows[0].elements[0].distance.value
+                    const distanceFromStore = distanceArrayMap[i].distance.value
+        
+                    await shipmentDetailServices.updateSequence(orderIdData, i+1)
+                    await shipmentDetailServices.updateDistance(orderIdData, distanceFromStore, distanceFromPrev)
+                    return res.status(200).send({ message: 'Data pengiriman customer tersebut bisa digabungkan' })
+                  } else {
+                    await createNewShipment({
+                      orderId,
+                      truckId,
+                      customerLatLongArr,
+                      shipFromStore: true,
+                      totalWeight: orderBody.totalWeight
+                    })
+
+                    return res.status(200).send({ message: `Data pengiriman customer tersebut tidak bisa digabungkan karena arah berbeda ${cardinalDirections.toString()} sehingga dibuat pengiriman baru` })
+                  }
+                }
               }
             }
 

@@ -125,7 +125,6 @@ const compareCustomer = async (req, res) => {
     let lngOrigin = 107.600941
     const cardinalDirections = []
   
-    console.log("distanceArray", distanceArray)
     for (let i = 0; i < distanceArray.length; i++) {
       const mostFarObj = distanceArray[distanceArray.length - 1] 
       const secondMostFarObj = distanceArray[distanceArray.length - 2]

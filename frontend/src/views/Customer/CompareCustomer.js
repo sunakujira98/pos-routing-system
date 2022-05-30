@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
-import { ErrorMessage } from '@hookform/error-message'
 import Select from 'react-select'
 
-import ErrorLabel from '../../components/ErrorLabel'
 import { useAllCustomerQuery, useCompareCustomerQuery } from '../../hooks/useCustomerQuery';
 
 const MAX_FIELD = 4
@@ -52,7 +50,6 @@ const CompareCustomer = () => {
   };
 
   const submitForm = (formData) => {
-    console.log("formData", formData)
     compareCustomerMutation.mutate(formData)
   }
 
