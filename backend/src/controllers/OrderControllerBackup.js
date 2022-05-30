@@ -90,40 +90,22 @@ const createOrder = async (req, res) => {
       const customerLat = getLat(customerLatLong)
       const customerLong = getLng(customerLatLong)
       const customerLatLongArr = [{lat: customerLat, lng: customerLong}]
-      
-      const nearestOrder = []
-      const min = Infinity
-      let nearestOrderIndex = 0
-      // to compare with current orders
-      for (let i = 0; i < compareOrders.length; i++) {
-        const currentOrderLatLong = compareOrders[i].lat_long
-        const currentOrderLat = getLat(currentOrderLatLong)
-        const currentOrderLng = getLng(currentOrderLatLong)
-        const currentOrderLatLongArr = [{lat: currentOrderLat, lng: currentOrderLng}]
-
-        const dMatrix = await distanceMatrixServices.getDistanceMatrix(customerLatLongArr, currentOrderLatLongArr, false)
-        const distanceArray = dMatrix.rows[0].elements[0]
-
-        if (distanceArray.distance.value < min) {
-          nearestOrderIndex = i
-        }
-      }
 
       // append with orders, change sequence, etc
-      if (compareOrders[nearestOrderIndex] !== null > 0) {
+      if (compareOrders.length > 0) {
         // previous order
         const orderLatLongArr = []
-        
-        const nearestOrder = compareOrders[nearestOrderIndex]
-        const orderLatLong = nearestOrder.lat_long
-        const orderLat = getLat(orderLatLong)
-        const orderLong = getLng(orderLatLong)
+        compareOrders.forEach(order => {
+          const orderLatLong = order.lat_long
+          const orderLat = getLat(orderLatLong)
+          const orderLong = getLng(orderLatLong)
 
-        orderLatLongArr.push({
-          lat: orderLat,
-          lng: orderLong,
-          orderId: order.id
-        })
+          orderLatLongArr.push({
+            lat: orderLat,
+            lng: orderLong,
+            orderId: order.id
+          })
+        });
 
         // now we push to array for the current input from req.body
         orderLatLongArr.push({
@@ -144,7 +126,10 @@ const createOrder = async (req, res) => {
           lng: orderLatLongArr[index].lng
         }))
 
+        console.log("distanceArrayMap before sort", distanceArrayMap)
         distanceArrayMap.sort(compare)
+
+        console.log("distanceArrayMap", distanceArrayMap)
 
         let latOrigin = -6.917195
         let lngOrigin = 107.600941
@@ -152,7 +137,7 @@ const createOrder = async (req, res) => {
 
         // compare most far with the 2nd furthest 
         if (distanceArrayMap.length > 1) {
-          const shipmentId = compareOrders[nearestOrderIndex].shipment_id
+          const shipmentId = compareOrders[0].shipment_id
           const mostFarObj = distanceArrayMap[distanceArrayMap.length - 1] 
           const secondMostFarObj = distanceArrayMap[distanceArrayMap.length - 2]
 
@@ -168,9 +153,8 @@ const createOrder = async (req, res) => {
             })
 
             res.status(201).send({ message: 'Berhasil membuat data order baru dengan pengiriman baru dikarenakan jarak terlalu jauh dengan pengiriman saat ini' }) 
-          } 
-          else {
-            const shipmentId = compareOrders[nearestOrderIndex].shipment_id // for now hardcode to index 0
+          } else {
+            const shipmentId = compareOrders[0].shipment_id // for now hardcode to index 0
 
             // insert to same shipment id
             await shipmentDetailServices.create({
