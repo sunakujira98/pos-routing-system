@@ -23,3 +23,9 @@ export const createCustomer = (requestBody) => {
 
   return axios.post(url, requestBody)
 }
+
+export const compareCustomer = (requestBody) => {
+  const url = '/api/customer/compare'
+
+  return axios.post(url, requestBody)
+}

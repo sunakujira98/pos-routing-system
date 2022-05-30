@@ -1,5 +1,3 @@
-const {Client} = require("@googlemaps/google-maps-services-js");
-
 const orderServices = require('../services/OrderService')
 const orderDetailServices = require('../services/OrderDetailService')
 const shipmentServices = require('../services/ShipmentService')
@@ -115,7 +113,6 @@ const createOrder = async (req, res) => {
           lng: customerLong,
           orderId
         })
-
 
         // can make this as a function to be reusable
         const dMatrix = await distanceMatrixServices.getDistanceMatrix(null, orderLatLongArr, true)

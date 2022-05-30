@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from 'react-query'
-import { getAllCustomer, createCustomer, getCustomerById, updateCustomer } from '../services/customer'
+import { getAllCustomer, createCustomer, getCustomerById, updateCustomer, compareCustomer } from '../services/customer'
 
 export const useAllCustomerQuery = ( shouldRefetch = false) => {
   const query = useQuery(['all-customer'], async () => {
@@ -31,6 +31,15 @@ export const useUpdateCustomerQuery = (id) => {
 export const useCreateCustomerQuery = () => {
   const mutation = useMutation(async (requestBody) => {
     const response = await createCustomer(requestBody)
+    return response?.data
+  })
+
+  return mutation
+}
+
+export const useCompareCustomerQuery = () => {
+  const mutation = useMutation(async (requestBody) => {
+    const response = await compareCustomer(requestBody)
     return response?.data
   })
 

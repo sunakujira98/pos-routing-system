@@ -1,15 +1,26 @@
 import React, { useEffect, useState } from 'react'
-import { useForm, useFieldArray } from 'react-hook-form'
-import { toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css';
+import { useForm, Controller, useFieldArray } from 'react-hook-form'
+import { ErrorMessage } from '@hookform/error-message'
+import Select from 'react-select'
 
 import ErrorLabel from '../../components/ErrorLabel'
+import { useAllCustomerQuery, useCompareCustomerQuery } from '../../hooks/useCustomerQuery';
 
-const MAX_FIELD = 5
+const MAX_FIELD = 4
 
 const CompareCustomer = () => {
   const [ customerDropdown, setCustomerDropdown ] = useState([])
   const { register, handleSubmit, formState: {errors}, control } = useForm()
+
+  const { data: customerData, isSuccess: isSuccessCustomer } = useAllCustomerQuery()
+  const compareCustomerMutation = useCompareCustomerQuery()
+  const { 
+    isLoading: isLoadingCompare, 
+    isSuccess: isSuccessCompare, 
+    isError: isErrorCompare, 
+    data: dataCompare, 
+    error: errorCompare 
+  } = compareCustomerMutation
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -17,12 +28,32 @@ const CompareCustomer = () => {
   })
 
   useEffect(() => {
-    append({})
-    //eslint-disable-next-line
-  }, [])
+    const initialCustomer = []
+    if (isSuccessCustomer) {
+      for (let index = 0; index < customerData.length; index++) {
+        initialCustomer.push({
+          value: customerData[index].id,
+          label: `${customerData[index].name} - ${customerData[index].address}`
+        })
+      }
+    }
+
+    setCustomerDropdown(() => initialCustomer)
+  }, [customerData, isSuccessCustomer])
+
+  const onButtonClick = (id, action) => {
+    return () => {
+      if (action === "add") {
+        append({ id: id + 1 });
+      } else {
+        remove(id);
+      }
+    };
+  };
 
   const submitForm = (formData) => {
     console.log("formData", formData)
+    compareCustomerMutation.mutate(formData)
   }
 
   return (
@@ -36,57 +67,100 @@ const CompareCustomer = () => {
               </div>
             </div>
             <div className='flex-auto px-4 lg:px-10 py-10 pt-0 bg-gray-100'>
-              {/* {isSuccess && toast.success(data?.message, {toastId: "unique-random-text-xAu9C9-"})}
-              {isError && toast.error(error?.message)} */}
               <h6 className='text-gray-400 text-sm mt-3 mb-6 font-bold uppercase'>
                 Bandingkan Customer
               </h6>
               <div className='flex flex-wrap'>
+                <>
+                  <div className='w-full lg:w-8/12 px-4 mb-2'>
+                    <div className='relative w-full mb-3'>
+                      <label className='block uppercase text-gray-600 text-xs font-bold mb-2'>
+                        Customer
+                      </label>
+                      <Controller
+                        name='customer[0]'
+                        control={control}
+                        render={({field: {onChange, onBlur, ref, value}}) => 
+                          <Select
+                            onBlur={onBlur}
+                            onChange={onChange}
+                            value={value}
+                            ref={ref}
+                            options={
+                              customerDropdown
+                            }
+                          />
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className='w-full lg:w-2/12 mt-8'>
+                    <button
+                      className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none ease-linear transition-all duration-150'
+                      type='submit'
+                      onClick={onButtonClick(1, "add", 1)}
+                    >
+                      Tambah
+                    </button>
+                  </div>
+                </>
                 {fields.map(({ id }, rowIndex) => {
                   return (
-                    <>
+                    <React.Fragment key={rowIndex}>
                     <div className='w-full lg:w-8/12 px-4 mb-2'>
                       <div className='relative w-full mb-3'>
                         <label className='block uppercase text-gray-600 text-xs font-bold mb-2'>
-                          Nama Customer
+                          Customer
                         </label>
-                        <input
-                          {...register('name')}
-                          type='text'
-                          className='border-0 px-3 py-3 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
-                          placeholder='Nama Customer'
+                        <Controller
+                          name={`customer[${rowIndex+1}]`}
+                          control={control}
+                          render={({field: {onChange, onBlur, ref, value}}) => 
+                            <Select
+                              onBlur={onBlur}
+                              onChange={onChange}
+                              value={value}
+                              ref={ref}
+                              options={
+                                customerDropdown
+                              }
+                            />
+                          }
                         />
-                        <ErrorLabel> {errors.name?.message} </ErrorLabel>
                       </div>
                     </div>
                     <div className='w-full lg:w-2/12 mt-8'>
-                      <button
+                      {fields.length !== MAX_FIELD && fields.length - 1 === rowIndex &&
+                        <button
                           className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none ease-linear transition-all duration-150'
-                          type='submit'
+                          type='button'
+                          onClick={onButtonClick(id, "add", fields.length)}
                         >
-                        Tambah
-                      </button>
+                          Tambah
+                        </button>
+                      }
                     </div>
                     <div className='w-full lg:w-2/12 mt-8'>
                       <button
-                          className='bg-orange-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150'
-                          type='submit'
-                        >
+                        className='bg-orange-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150'
+                        type='button'
+                        onClick={onButtonClick(id, "remove" , fields.length)}
+                      >
                         Kurangi
                       </button>
                     </div>
-                    </>
+                    </React.Fragment>
                   )
                 })}
-                
               </div>
+            {isSuccessCompare && <p>{dataCompare.message}</p>}
             </div>
             <div className='rounded-t bg-white mb-0 px-6 py-6'>
               <div className='float-right'>
                 <button
-                    className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150'
-                    type='submit'
-                  >
+                  className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150'
+                  type='submit'
+                >
                   Simpan
                 </button>
                 {/* {isLoading
