@@ -27,12 +27,12 @@ const create = async customerData => {
 }
 
 const update = async (id, customerData) => {
-  const { name, phone, address, latLong } = customerData
+  const { name, phone, address, lat_long } = customerData
 
   try {
     const customer = await prisma.customer.update({
       where: { id },
-      data: { name, phone, address, lat_long: latLong }
+      data: { name, phone, address, lat_long }
     })
 
     return customer

@@ -27,12 +27,12 @@ const create = async truckData => {
 }
 
 const update = async (id, truckData) => {
-  const { name, capacity, vehicleNo } = truckData
+  const { name, capacity, vehicle_no } = truckData
 
   try {
     const truck = await prisma.truck.update({
       where: { id },
-      data: { name, capacity, vehicle_no: vehicleNo }
+      data: { name, capacity, vehicle_no }
     })
 
     return truck

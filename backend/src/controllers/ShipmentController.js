@@ -46,7 +46,7 @@ const updateShipment = async (req, res) => {
 
     res.status(200).send({ shipment, message: `Berhasil mengubah status pengiriman dengan id ${id}` })
   } catch (error) {
-    logger.error('Error updateShipment controller', logger.error(error))
+    console.error('Error updateShipment controller', console.error(error))
     res.status(500).send(`Terdapat error saat mengubah statue pengiriman ${id}`)
   }
 }

@@ -1,0 +1,20 @@
+1. Extract zip dengan nama route-project
+2. Akan terdiri dari beberapa folder, fokus kepada folder berikut : 
+ - backend
+ - frontend
+3. Pastikan anda telah mengaktifkan docker
+4. Ketika anda sudah mengaktifkan docker, di root folder (root artinya di folder paling atas project, yaitu saat anda memasuki route-project), lakukan syntax berikut di vscode
+    - docker-compose download
+    - docker-compose pull
+    - docker-compose up
+(biarkan menyala)
+5. Setelah itu, buka 1 terminal baru di vscode, lalu buka folder backend, caranya cd backend dari root project, lalu run syntax npm run start
+6. Setelah itu, buka 1 terminal baru di vscode, lalu buka folder frontend, caranya cd frontend dari root project, lalu run syntax npm start
+7. Aplikasi anda akan terbuka dan redirect ke login page
+8. Buka browser, lalu buka 0.0.0.0:8084, pada bagian query, insert data berikut di postgre
+    - INSERT INTO roles(name) VALUES ('owner');
+    - INSERT INTO roles(name) VALUES ('admin');
+    - INSERT INTO users(role_id, username, password) VALUES (1, 'owner', '$2a$10$iaybDCxHs6N5bzY0lqxm7OJ5ar2Sbw6XOWFCYqhzQaJDgIWQUTsI6');
+    - INSERT INTO users(role_id, username, password) VALUES (2, 'admin', '$2a$10$iaybDCxHs6N5bzY0lqxm7OJ5ar2Sbw6XOWFCYqhzQaJDgIWQUTsI6');
+9. login dengan username owner / admin , password keduanya adalah admin
+    

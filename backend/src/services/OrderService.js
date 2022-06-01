@@ -16,7 +16,7 @@ const getById = async id => {
     { 
       where: { id },
       include: {
-        orderDetails: {
+        order_details: {
           include: {
             product: true
           }

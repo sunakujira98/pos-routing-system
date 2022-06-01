@@ -12,7 +12,7 @@ import { useTruckByIdQuery, useUpdateTruckQuery } from '../../hooks/useTruckQuer
 const schema = yup.object().shape({
   name: yup.string().required('Nama kendaraan wajib diisi'),
   capacity: yup.number().typeError('Kapasitas harus angka').required('Kapasitas harus diisi'),
-  vehicleNo: yup.string().required('Nomor polisi harus diisi')
+  vehicle_no: yup.string().required('Nomor polisi harus diisi')
 });
 
 const EditTruck = () => {
@@ -50,7 +50,7 @@ const EditTruck = () => {
           <div className='relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0'>
             <div className='rounded-t bg-white mb-0 px-6 py-6'>
               <div className='text-center flex justify-between'>
-                <h6 className='text-blueGray-700 text-xl font-bold'>Ubah Data Customer </h6>
+                <h6 className='text-blueGray-700 text-xl font-bold'>Ubah Data Truk </h6>
               </div>
             </div>
             <div className='flex-auto px-4 lg:px-10 py-10 pt-0 bg-gray-100'>
@@ -96,13 +96,13 @@ const EditTruck = () => {
                       Nomor Polisi
                     </label>
                     <input
-                      {...register('vehicleNo')}
+                      {...register('vehicle_no')}
                       type='text'
                       className='border-0 px-3 py-3 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
                       placeholder='Nomor Polisi'
                       autoComplete='off'
                     />
-                    <ErrorLabel>{errors.vehicleNo?.message} </ErrorLabel>
+                    <ErrorLabel>{errors.vehicle_no?.message} </ErrorLabel>
                   </div>
                 </div>  
               </div>

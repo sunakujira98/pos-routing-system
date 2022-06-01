@@ -13,7 +13,7 @@ const schema = yup.object().shape({
   name: yup.string().required('Nama wajib diisi'),
   phone: yup.number().typeError('Nomor telpon harus angka').required('Nomor telpon harus diisi'),
   address: yup.string('Alamat wajib diisi').required('Alamat wajib diisi'),
-  latLong: yup.string().required('Harap isi latitude dan longitude')
+  lat_long: yup.string().required('Harap isi latitude dan longitude')
 });
 
 const EditCustomer = () => {
@@ -112,13 +112,13 @@ const EditCustomer = () => {
                       Latitude dan Longitude
                     </label>
                     <input
-                      {...register('latLong')}
+                      {...register('lat_long')}
                       type='text'
                       className='border-0 px-3 py-3 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
                       placeholder='Latitude and Longitude'
                       autoComplete='off'
                     />
-                    <ErrorLabel>{errors.latLong?.message} </ErrorLabel>
+                    <ErrorLabel>{errors.lat_long?.message} </ErrorLabel>
                   </div>
                 </div>  
               </div>

@@ -28,7 +28,7 @@ const ViewOrderDetail = () => {
     const [tableData, setTableData] = useState(null);
   
     useEffect(() => {
-      setTableData(data?.orderDetails);
+      setTableData(data?.order_details);
     }, [isSuccess, data])
 
     if (isLoading || !tableData) {
