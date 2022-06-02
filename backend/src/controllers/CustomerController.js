@@ -17,7 +17,7 @@ const getCustomers = async (req, res) => {
     res.status(200).send(customers)
   } catch (error) {
     console.error('Error getCustomers controller', error)
-    res.status(500).send('There is an error when processing getCustomers')
+    res.status(500).send('Terdapat error sangat mengambil seluruh data customer')
   }
 }
 
@@ -55,7 +55,7 @@ const createCustomer = async (req, res) => {
     res.status(201).send({ customer, message: 'Berhasil membuat data customer baru' })
   } catch (error) {
     console.error('Error createCustomer controller', console.error(error))
-    res.status(500).send('There is an error when processing createCustomer')
+    res.status(500).send('Terdapat error saat membuat data customer')
   }
 }
 
@@ -75,7 +75,7 @@ const updateCustomer = async (req, res) => {
     res.status(200).send({ customer, message: 'Berhasil mengubah data customer' })
   } catch (error) {
     console.error('Error updateCustomer controller', console.error(error))
-    res.status(500).send('There is an error when processing updateCustomer')
+    res.status(500).send('Terdapat error saat mengubah data customer')
   }
 }
 
@@ -173,7 +173,7 @@ const compareCustomer = async (req, res) => {
     }
   } catch (error) {
     console.error('Error updateCustomer controller', console.error(error))
-    res.status(500).send('There is an error when processing updateCustomer')
+    res.status(500).send('Terdapat error saat membandingkan data customer')
   }
 }
 

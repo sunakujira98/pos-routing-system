@@ -199,16 +199,16 @@ const createOrder = async (req, res) => {
               } else {
                 lat1 = latOrigin;
                 lon1 = lngOrigin;
-                var lat2 = distanceArrayMap[i].lat;
-                var lon2 = distanceArrayMap[i].lng;
+                const lat2 = distanceArrayMap[i].lat;
+                const lon2 = distanceArrayMap[i].lng;
             
                 lat1 = lat1 * Math.PI / 180;
                 lat2 = lat2 * Math.PI / 180;
-                var dLon = (lon2-lon1) * Math.PI / 180;
-                var y = Math.sin(dLon) * Math.cos(lat2);
-                var x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+                const dLon = (lon2-lon1) * Math.PI / 180;
+                const y = Math.sin(dLon) * Math.cos(lat2);
+                const x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
             
-                var bearing = Math.atan2(y, x) * 180 / Math.PI;
+                const bearing = Math.atan2(y, x) * 180 / Math.PI;
             
                 if (bearing < 0) {
                   bearing = bearing + 360;
@@ -216,7 +216,7 @@ const createOrder = async (req, res) => {
             
                 bearing = bearing.toFixed(0);
             
-                var bearings = ["Timur Laut", "Timur", "Tenggara", "Selatan", "Barat Daya", "Barat", "Barat Laut", "Utara"];
+                const bearings = ["Timur Laut", "Timur", "Tenggara", "Selatan", "Barat Daya", "Barat", "Barat Laut", "Utara"];
             
                 let degree = bearing - 22.5;
                 if (degree < 0) degree += 360;
@@ -288,7 +288,7 @@ const createOrder = async (req, res) => {
 
   } catch (error) {
     console.error('Error createOrder controller', error)
-    res.status(500).send('There is an error when processing createOrder')
+    res.status(500).send('Terdapat error saat menambahkan order')
   }
 }
 

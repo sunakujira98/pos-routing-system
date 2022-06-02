@@ -10,7 +10,7 @@ const getShipments = async (req, res) => {
     res.status(200).send(shipments)
   } catch (error) {
     console.error('Error getShipments controller', error)
-    res.status(500).send('There is an error when processing getShipments')
+    res.status(500).send('Terdapat error saat mengambil seluruh data pengiriman')
   }
 }
 
@@ -30,7 +30,7 @@ const getShipmentById = async (req, res) => {
     }
   } catch (error) {
     console.log('Error getShipmentById controller', error)
-    res.status(500).send('There is an error when processing getShipmentById')
+    res.status(500).send('Terdapat error saat mengambil sebuah data pengiriman')
   }
 }
 
@@ -47,7 +47,7 @@ const updateShipment = async (req, res) => {
     res.status(200).send({ shipment, message: `Berhasil mengubah status pengiriman dengan id ${id}` })
   } catch (error) {
     console.error('Error updateShipment controller', console.error(error))
-    res.status(500).send(`Terdapat error saat mengubah statue pengiriman ${id}`)
+    res.status(500).send(`Terdapat error saat mengubah status pengiriman ${id}`)
   }
 }
 

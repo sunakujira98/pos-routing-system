@@ -11,7 +11,7 @@ import { useAllCustomerQuery } from '../../hooks/useCustomerQuery'
 import { useAllTruckQuery } from '../../hooks/useTruckQuery'
 import { useCreateOrderQuery } from '../../hooks/useOrderQuery'
 
-const OrderCart = ({ id, productData }) => {
+const OrderCart = ({ id, productData, products, setProducts }) => {
   const { register, handleSubmit, formState: {errors}, setValue, getValues, control } = useForm()
   
   const { data: customerData, isSuccess: isSuccessCustomer } = useAllCustomerQuery(true)
@@ -20,27 +20,16 @@ const OrderCart = ({ id, productData }) => {
   const createOrderMutation = useCreateOrderQuery()
   const {isLoading: isLoadingOrder, isSuccess: isSuccessOrder, isError, data: orderData, error} = createOrderMutation
 
-  const [ products, setProducts ] = useState([])
   const [ totalWeight, setTotalWeight ] = useState(0)
   const [ grandTotal, setGrandTotal ] = useState(0)
   const [ customerDropdown, setCustomerDropdown ] = useState([])
   const [ truckDropdown, setTruckDropdown ] = useState([])
+  const [ subtotalState, setSubtotalState ] = useState([])
 
   const watchShipping = useWatch({
     control,
     name: 'shipping'
   })
-  
-  useEffect(() => {
-    if (id) {
-      const chosenProduct = productData.find((product => product.id === id))
-      const isProductPresent = products.find((product => product.id === id)) ? true : false
-      
-      if (!isProductPresent) {
-        setProducts(prevState => [...prevState, chosenProduct])
-      }
-    }
-  }, [id, productData, products])
 
   useEffect(() => {
     const initialCustomer = []
@@ -98,7 +87,35 @@ const OrderCart = ({ id, productData }) => {
     setValue('totalWeight', totalWeightVar)
     setValue('grandTotal', grandTotalVar)
     setValue(`transactionDetail[${index}].subTotal`, subTotal)
+    const newState = [...subtotalState]
+    newState[index] = subTotal
+    setSubtotalState(newState)
     setValue(`transactionDetail[${index}].subTotalRupiah`, showNumberInRupiah(subTotal))
+  }
+
+  const onDeleteProduct = (index) => {
+    const temp = [...products]
+    temp.splice(index, 1)
+    setProducts(temp)
+
+    let totalWeightVar = 0 
+    let grandTotalVar = 0
+  
+
+    for (let i = 0; i < temp.length; i++) {
+      const price = getValues(`transactionDetail[${i}].price`)
+      const weight = getValues(`transactionDetail[${i}].weight`)
+      const qty = getValues(`transactionDetail[${i}].qty`)
+
+      grandTotalVar += parseInt(qty) * price
+      totalWeightVar += parseInt(qty) * weight
+    }
+
+    console.log("totalWeightVar", totalWeightVar)
+    setTotalWeight(totalWeightVar)
+    setGrandTotal(grandTotalVar)
+    setValue('totalWeight', totalWeightVar)
+    setValue('grandTotal', grandTotalVar)
   }
 
   const submitForm = (data) => {
@@ -251,21 +268,20 @@ const OrderCart = ({ id, productData }) => {
                     <input
                       {...register(`transactionDetail[${index}].subTotal`)}
                       type='hidden'
-                      className='border-0 px-3 py-2 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
+                      className='border-none px-3 py-2 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
                       onChange={(event) => handleQtyChange(event, index)}
                       autoComplete='off'
                     />
-                    <input
-                      {...register(`transactionDetail[${index}].subTotalRupiah`)}
-                      type='text'
-                      className='border-0 px-3 py-2 placeholder-gray-400 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150'
-                      disabled={true}
-                      onChange={(event) => handleQtyChange(event, index)}
-                      autoComplete='off'
-                    />
+                    {showNumberInRupiah(subtotalState[index])}
                   </div>
                   <div className='w-full lg:w-1/12 p-2 border-b border-l border-r'>
-                    Aksi
+                  <button
+                    className='bg-orange-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-2 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none ease-linear transition-all duration-150'
+                    type='button'
+                    onClick={() => onDeleteProduct(index)}
+                  >
+                    Hapus
+                  </button>
                   </div>
                 </div>
               )

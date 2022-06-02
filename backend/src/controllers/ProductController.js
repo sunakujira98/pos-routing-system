@@ -48,7 +48,7 @@ const createProduct = async (req, res) => {
     res.status(201).send({ product, message: 'Berhasil membuat data produk baru' })
   } catch (error) {
     console.error('Error createProduct controller', console.error(error))
-    res.status(500).send('There is an error when processing createProduct')
+    res.status(500).send('Terdapat error saat membuat produk')
   }
 }
 
@@ -69,7 +69,7 @@ const updateProduct = async (req, res) => {
     res.status(200).send({ product, message: 'Berhasil mengubah data produk' })
   } catch (error) {
     console.error('Error updateproduct controller', console.error(error))
-    res.status(500).send('There is an error when processing updateproduct')
+    res.status(500).send('Terdapat error saat mengubah produk')
   }
 }
 

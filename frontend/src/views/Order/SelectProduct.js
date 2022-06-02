@@ -2,10 +2,15 @@ import React from 'react'
 import { array, func } from 'prop-types'
 import ProductCard from '../../components/ProductCard'
 
-const SelectProduct = ({ data, setProductId }) => {
+const SelectProduct = ({ data, setProductId, products, setProducts, productData }) => {
 
   const onSelectProduct = (id) => {
-    setProductId(id)
+    const chosenProduct = productData.find((product => product.id === id))
+    const isProductPresent = products.find((product => product.id === id)) ? true : false
+
+    if (!isProductPresent) {
+      setProducts(prevState => [...prevState, chosenProduct])
+    }
   }
 
   return (

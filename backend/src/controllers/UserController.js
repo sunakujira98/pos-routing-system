@@ -71,6 +71,8 @@ const login = async (req, res) => {
 
       // user
       res.status(200).json(user)
+    } else {
+      res.send(401).json({message: 'Username atau password yang anda masukkan salah'})
     }
   
     

@@ -9,7 +9,7 @@ const getTrucks = async (req, res) => {
     res.status(200).send(trucks)
   } catch (error) {
     console.error('Error getTrucks controller', error)
-    res.status(500).send('There is an error when processing getTrucks')
+    res.status(500).send('Terdapat error saat mengambil seluruh data truk')
   }
 }
 
@@ -29,7 +29,7 @@ const getTruckById = async (req, res) => {
     }
   } catch (error) {
     console.log('Error getTruckById controller', error)
-    res.status(500).send('There is an error when processing getTruckById')
+    res.status(500).send('Terdapat error saat mengambil sebuah data truk')
   }
 }
 
@@ -46,7 +46,7 @@ const createTruck = async (req, res) => {
     res.status(201).send({ truck, message: 'Berhasil membuat data truk baru' })
   } catch (error) {
     console.error('Error createTruck controller', console.error(error))
-    res.status(500).send('There is an error when processing createTruck')
+    res.status(500).send('Terdapat error saat membuat data truk')
   }
 }
 
@@ -65,7 +65,7 @@ const updateTruck = async (req, res) => {
     res.status(200).send({ truck, message: 'Berhasil mengubah data truk' })
   } catch (error) {
     console.error('Error updateTruck controller', console.error(error))
-    res.status(500).send('There is an error when processing updateTruck')
+    res.status(500).send('Terdapat error saat mengubah data truk')
   }
 }
 
