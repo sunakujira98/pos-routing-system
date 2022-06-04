@@ -1,5 +1,6 @@
 const orderServices = require('../services/OrderService')
 const orderDetailServices = require('../services/OrderDetailService')
+const truckServices = require('../services/TruckService')
 const shipmentServices = require('../services/ShipmentService')
 const shipmentDetailServices = require('../services/ShipmentDetailService')
 const customerServices = require('../services/CustomerService')
@@ -74,46 +75,54 @@ const createOrder = async (req, res) => {
       totalWeight: parseInt(req.body.totalWeight, 10),
     }
     const orderDetailBody = req.body.transactionDetail
-
-    const order = await orderServices.create(orderBody)
-    const orderId = order.id
-    await orderDetailServices.create(orderId, orderDetailBody)
   
     if (shipping === 'delivery') {
       const { truck: { value: truckId } } = req.body 
       const compareOrders = await orderServices.getOrdersBelongToShipment(parseInt(truckId, 10))
 
-      // get the customer's detail to get lat_long
-      const customerId = parseInt(req.body.customer.value, 10)
-      const customer = await customerServices.getById(customerId)
-      const customerLatLong = customer.lat_long
-      const customerLat = getLat(customerLatLong)
-      const customerLong = getLng(customerLatLong)
-      const customerLatLongArr = [{lat: customerLat, lng: customerLong}]
+      const truck = await truckServices.getById(parseInt(truckId, 10))
       
-      let max = Infinity
-      let nearestOrderIndex = 0
-      
-      // to compare with current orders
+      // check capacity truck
+      let totalOrderWeight = 0
       for (let i = 0; i < compareOrders.length; i++) {
-        const currentOrderLatLong = compareOrders[i].lat_long
-        const currentOrderLat = getLat(currentOrderLatLong)
-        const currentOrderLng = getLng(currentOrderLatLong)
-        const currentOrderLatLongArr = [{lat: currentOrderLat, lng: currentOrderLng}]
-
-        const dMatrix = await distanceMatrixServices.getDistanceMatrix(customerLatLongArr, currentOrderLatLongArr, false)
-        const distanceArray = dMatrix.rows[0].elements[0]
-        console.log("distanceArray", distanceArray)
-
-        if (distanceArray.distance.value < max) {
-          max = distanceArray.distance.value
-          nearestOrderIndex = i
-        }
+        totalOrderWeight += compareOrders[i].total_weight
       }
 
-      console.log("compareOrders[nearestOrderIndex]", compareOrders[nearestOrderIndex])
+      if (totalOrderWeight + req.body.totalWeight > truck.capacity) {
+        return res.status(200).send({ message: `Berat saat ini yang dibawa truck adalah ${totalOrderWeight + req.body.totalWeight} kg melebihi kapasitas truck ${truck.capacity} kg, harap mengganti dengan truck lain` }) 
+      } else {
+        const order = await orderServices.create(orderBody)
+        const orderId = order.id
+        await orderDetailServices.create(orderId, orderDetailBody)
+       
+        // get the customer's detail to get lat_long
+        const customerId = parseInt(req.body.customer.value, 10)
+        const customer = await customerServices.getById(customerId)
+        const customerLatLong = customer.lat_long
+        const customerLat = getLat(customerLatLong)
+        const customerLong = getLng(customerLatLong)
+        const customerLatLongArr = [{lat: customerLat, lng: customerLong}]
+        
+        let max = Infinity
+        let nearestOrderIndex = 0
+        
+        // to compare with current orders
+        for (let i = 0; i < compareOrders.length; i++) {
+          const currentOrderLatLong = compareOrders[i].lat_long
+          const currentOrderLat = getLat(currentOrderLatLong)
+          const currentOrderLng = getLng(currentOrderLatLong)
+          const currentOrderLatLongArr = [{lat: currentOrderLat, lng: currentOrderLng}]
 
-      // append with orders, change sequence, etc
+          const dMatrix = await distanceMatrixServices.getDistanceMatrix(customerLatLongArr, currentOrderLatLongArr, false)
+          const distanceArray = dMatrix.rows[0].elements[0]
+
+          if (distanceArray.distance.value < max) {
+            max = distanceArray.distance.value
+            nearestOrderIndex = i
+          }
+        }
+
+              // append with orders, change sequence, etc
       if (compareOrders[nearestOrderIndex] !== undefined) {
         // previous order
         const orderLatLongArr = []
@@ -199,8 +208,8 @@ const createOrder = async (req, res) => {
               } else {
                 lat1 = latOrigin;
                 lon1 = lngOrigin;
-                const lat2 = distanceArrayMap[i].lat;
-                const lon2 = distanceArrayMap[i].lng;
+                let lat2 = distanceArrayMap[i].lat;
+                let lon2 = distanceArrayMap[i].lng;
             
                 lat1 = lat1 * Math.PI / 180;
                 lat2 = lat2 * Math.PI / 180;
@@ -208,7 +217,7 @@ const createOrder = async (req, res) => {
                 const y = Math.sin(dLon) * Math.cos(lat2);
                 const x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
             
-                const bearing = Math.atan2(y, x) * 180 / Math.PI;
+                let bearing = Math.atan2(y, x) * 180 / Math.PI;
             
                 if (bearing < 0) {
                   bearing = bearing + 360;
@@ -269,8 +278,6 @@ const createOrder = async (req, res) => {
             res.status(201).send({ message: `Berhasil membuat data pesanan baru, data order tersebut digabungkan bersama pengiriman dengan id ${shipmentId}` }) 
           }
         }
-
-        
       } else {
         await createNewShipment({
           orderId,
@@ -282,6 +289,11 @@ const createOrder = async (req, res) => {
 
         res.status(201).send({ message: 'Berhasil membuat data order baru dengan pengiriman baru' }) 
       }
+      }
+    } else {
+      const order = await orderServices.create(orderBody)
+      const orderId = order.id
+      await orderDetailServices.create(orderId, orderDetailBody)
     }
 
     res.status(201).send({ message: 'Berhasil membuat data order baru' }) 
