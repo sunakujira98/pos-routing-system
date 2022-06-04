@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import TableInstance from '../../components/Table/TableInstance'
 import { useOrderByIdQuery } from '../../hooks/useOrderQuery'
+import { showNumberInRupiah } from '../../utils/Helpers';
 
 const columnsHeader = [
   {
@@ -14,9 +15,12 @@ const columnsHeader = [
     accessor: 'qty',
   },
   {
-    Header: 'Harga satuan',
-    accessor: 'product.price'
-  }
+    Header: 'Harga Satuan',
+    accessor: 'product.price',
+    Cell: ({ cell }) => (
+      <p>{showNumberInRupiah(cell.row.original.product.price)}</p>
+    )
+  },
 ]
 
 const ViewOrderDetail = () => {

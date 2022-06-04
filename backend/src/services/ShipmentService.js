@@ -4,7 +4,16 @@ const prisma = new PrismaClient()
 const get = async () => {
   const shipments = await prisma.shipments.findMany({
     include: {
-      truck: true
+      truck: true,
+      shipment_details: {
+        include: {
+          order: {
+            include: {
+              customer: true
+            }
+          }
+        }
+      }
     }
   })
 

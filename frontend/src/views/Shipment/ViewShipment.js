@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import moment from 'moment'
 
 import TableInstance from '../../components/Table/TableInstance'
 import { useAllShipmentQuery } from '../../hooks/useShipmentQuery'
@@ -15,6 +16,22 @@ const columnsHeader = [
   {
     Header: 'Tanggal Pengiriman',
     accessor: 'shipment_date',
+    Cell: ({ cell }) => (
+      <p>{moment().format('YYYY-MMM-DD HH:mm').toLocaleString(cell.row.original.shipment_date)}</p>
+    )
+  },
+  {
+    width: 300,
+    Header: "Total Berat",
+    accessor: "total_weight",
+    Cell: ({ cell }) => {
+      const { shipment_details } = cell.row.original
+      let totalWeight = 0
+      for (let i = 0; i < shipment_details.length; i++) {
+        totalWeight += shipment_details[i].total_weight
+      }
+      return (<p>{totalWeight} kg</p>)
+    }
   },
   {
     width: 300,

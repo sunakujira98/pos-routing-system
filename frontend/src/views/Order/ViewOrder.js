@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
+import moment from 'moment'
 
 import TableInstance from '../../components/Table/TableInstance'
 import { useAllOrderQuery } from '../../hooks/useOrderQuery'
+import { showNumberInRupiah } from '../../utils/Helpers'
 
 const columnsHeader = [
   {
@@ -11,10 +13,16 @@ const columnsHeader = [
   {
     Header: 'Total Belanja',
     accessor: 'grand_total',
+    Cell: ({ cell }) => (
+      <p>{showNumberInRupiah(cell.row.original.grand_total)}</p>
+    )
   },
   {
-    Header: 'Tanggal Order',
+    Header: 'Tanggal Pemesanan',
     accessor: 'order_date',
+    Cell: ({ cell }) => (
+      <p>{moment().format('YYYY-MMM-DD HH:mm').toLocaleString(cell.row.original.order_date)}</p>
+    )
   },
   {
     Header: 'Berat Order',
