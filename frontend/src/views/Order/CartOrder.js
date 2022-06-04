@@ -111,7 +111,6 @@ const OrderCart = ({ id, productData, products, setProducts }) => {
       totalWeightVar += parseInt(qty) * weight
     }
 
-    console.log("totalWeightVar", totalWeightVar)
     setTotalWeight(totalWeightVar)
     setGrandTotal(grandTotalVar)
     setValue('totalWeight', totalWeightVar)
