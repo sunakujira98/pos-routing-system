@@ -276,6 +276,60 @@ const createOrder = async (req, res) => {
                 }
               }
 
+              // updating sequence and distance
+              compareOrdersArr = []
+              for (let i = 0; i < compareOrders.length; i++) {
+                const orderLat = getLat(compareOrders[i].lat_long)
+                const orderLng = getLng(compareOrders[i].lat_long)
+                const orderId = compareOrders[i].id
+                compareOrdersArr.push({lat: orderLat, lng: orderLng, orderId: orderId})
+              }
+
+              compareOrdersArr.push({lat: customerLat, lng: customerLong, orderId: orderId})
+
+              const distanceArrayCOArr = await distanceMatrixServices.getDistanceMatrix(null, compareOrdersArr, true)
+              const distanceArrCOArrMatrix = distanceArrayCOArr.rows[0].elements
+
+              // add the order to each distance matrix response
+              for (let i = 0; i < distanceArrCOArrMatrix.length; i++) {
+                distanceArrCOArrMatrix[i].orderId = compareOrdersArr[i].orderId
+                distanceArrCOArrMatrix[i].lat = compareOrdersArr[i].lat
+                distanceArrCOArrMatrix[i].lng = compareOrdersArr[i].lng
+              }
+              distanceArrCOArrMatrix.sort(compare)
+
+              for (let i = 0; i < distanceArrCOArrMatrix.length; i++) {
+                const orderIdData = distanceArrCOArrMatrix[i].orderId
+                
+                if (i === 0) {
+                  const latCurr = distanceArrCOArrMatrix[i].lat
+                  const lngCurr = distanceArrCOArrMatrix[i].lng
+                  const latLangCurr = [{lat: latCurr, lng: lngCurr}]
+
+                  const dMatrixFromStore = await distanceMatrixServices.getDistanceMatrix(null, latLangCurr, true)
+                  const distanceFromStore = dMatrixFromStore.rows[0].elements[0].distance.value
+
+                  await shipmentDetailServices.updateSequence(orderIdData, i+1)
+                  await shipmentDetailServices.updateDistance(orderIdData, distanceFromStore, 0)
+                } else {
+                  const latPrev = distanceArrCOArrMatrix[i-1].lat
+                  const lngPrev = distanceArrCOArrMatrix[i-1].lng
+                  const latLangPrev = [{lat: latPrev, lng: lngPrev}]
+      
+                  const latCurr = distanceArrCOArrMatrix[i].lat
+                  const lngCurr = distanceArrCOArrMatrix[i].lng
+                  const latLangCurr = [{lat: latCurr, lng: lngCurr}]
+  
+                  const dMatrixFromPrev = await distanceMatrixServices.getDistanceMatrix(latLangPrev, latLangCurr, false)
+                  const dMatrixFromStore = await distanceMatrixServices.getDistanceMatrix(null, latLangCurr, true)
+                  const distanceFromPrev = dMatrixFromPrev.rows[0].elements[0].distance.value
+                  const distanceFromStore = dMatrixFromStore.rows[0].elements[0].distance.value
+      
+                  await shipmentDetailServices.updateSequence(orderIdData, i+1)
+                  await shipmentDetailServices.updateDistance(orderIdData, distanceFromStore, distanceFromPrev)
+                }
+              }
+
               return res.status(201).send({ message: `Berhasil membuat data pesanan baru, data order tersebut digabungkan bersama pengiriman dengan id ${shipmentId}` }) 
             }
           }
