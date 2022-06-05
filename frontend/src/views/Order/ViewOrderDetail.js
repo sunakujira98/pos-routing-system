@@ -11,7 +11,7 @@ const columnsHeader = [
     accessor: 'product.name',
   },
   {
-    Header: 'Banyaknya',
+    Header: 'Kuantitas',
     accessor: 'qty',
   },
   {
@@ -25,15 +25,15 @@ const columnsHeader = [
 
 const ViewOrderDetail = () => {
   const { id } = useParams();
+  const {data, isSuccess, isLoading} = useOrderByIdQuery(id)
 
   const TableQuery = () => {
-    const {data, isSuccess, isLoading} = useOrderByIdQuery(id)
 
     const [tableData, setTableData] = useState(null);
   
     useEffect(() => {
       setTableData(data?.order_details);
-    }, [isSuccess, data])
+    }, [])
 
     if (isLoading || !tableData) {
       return <div>Loading...</div>
@@ -43,6 +43,9 @@ const ViewOrderDetail = () => {
       <TableInstance columnsHeader={columnsHeader} tableData={tableData} />
     );
   }
+
+  const shipmentTruck = data?.shipment_details[0].shipment.truck.id
+  const shipmentLabel = shipmentTruck ? `dikirim dengan ${shipmentTruck}` : ''
   
   return (
     <div className='relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded'>
@@ -50,7 +53,7 @@ const ViewOrderDetail = () => {
         <div className='flex flex-wrap items-center'>
           <div className='relative w-full px-4 max-w-full flex-grow flex-1'>
             <h3 className='font-semibold text-lg'>
-              Data Order {id}
+              Data order milik {data?.customer.name} dengan id {data?.customer.id} {shipmentLabel}
             </h3>
           </div>
         </div>

@@ -23,10 +23,10 @@ const CreateOrder = () => {
       <Sidebar />
       <div className='relative md:ml-64'>
         <div className='flex flex-wrap'>
-          <div className='w-full lg:w-7/12 px-4'>
+          <div className='w-full lg:w-8/12 px-4'>
             <CartOrder id={id} productData={data} products={products} setProducts={setProducts} />
           </div>
-          <div className='w-full lg:w-5/12 px-4'>
+          <div className='w-full lg:w-3/12 px-4'>
             <SelectProduct data={data} setProductId={setProductId} products={products} setProducts={setProducts} productData={data} />
           </div>
         </div>

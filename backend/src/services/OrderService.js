@@ -20,7 +20,17 @@ const getById = async id => {
           include: {
             product: true
           }
-        }
+        },
+        shipment_details: {
+          include: {
+            shipment: {
+              include: {
+                truck: true
+              }
+            }
+          }
+        },
+        customer: true
       } 
     },
   )

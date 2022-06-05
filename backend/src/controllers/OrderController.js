@@ -89,7 +89,7 @@ const createOrder = async (req, res) => {
       }
 
       if (totalOrderWeight + req.body.totalWeight > truck.capacity) {
-        return res.status(200).send({ message: `Berat saat ini yang dibawa truck adalah ${totalOrderWeight + req.body.totalWeight} kg melebihi kapasitas truck ${truck.capacity} kg, harap mengganti dengan truck lain` }) 
+        return res.status(200).send({ message: 'Kapasitas truk sudah tidak memadai, silahkan menggunakan truk lain untuk mengirim' }) 
       } else {
         const order = await orderServices.create(orderBody)
         const orderId = order.id
@@ -122,7 +122,7 @@ const createOrder = async (req, res) => {
           }
         }
 
-              // append with orders, change sequence, etc
+      // append with orders, change sequence, etc
       if (compareOrders[nearestOrderIndex] !== undefined) {
         // previous order
         const orderLatLongArr = []
@@ -171,7 +171,7 @@ const createOrder = async (req, res) => {
 
           const distanceBetweenTwo = Math.abs(mostFarObj.distance.value - secondMostFarObj.distance.value)
           
-          if (distanceBetweenTwo > 3000) {
+          if (distanceBetweenTwo > 1000) {
             await createNewShipment({
               orderId,
               truckId,
@@ -206,6 +206,7 @@ const createOrder = async (req, res) => {
                 await shipmentDetailServices.updateSequence(orderIdData, sequence)
                 await shipmentDetailServices.updateDistance(orderIdData, distanceFromStore, 0)
               } else {
+                sequence = i
                 lat1 = latOrigin;
                 lon1 = lngOrigin;
                 let lat2 = distanceArrayMap[i].lat;
@@ -257,7 +258,8 @@ const createOrder = async (req, res) => {
                     const distanceFromPrev = dMatrixFromPrev.rows[0].elements[0].distance.value
                     const distanceFromStore = distanceArrayMap[i].distance.value
         
-                    await shipmentDetailServices.updateSequence(orderIdData, i+1)
+                    console.log("masuk siniiiiiiiiiii")
+                    await shipmentDetailServices.updateSequence(orderIdData, sequence)
                     await shipmentDetailServices.updateDistance(orderIdData, distanceFromStore, distanceFromPrev)
                     return res.status(200).send({ message: 'Data pengiriman customer tersebut bisa digabungkan' })
                   } else {
@@ -275,7 +277,7 @@ const createOrder = async (req, res) => {
               }
             }
 
-            res.status(201).send({ message: `Berhasil membuat data pesanan baru, data order tersebut digabungkan bersama pengiriman dengan id ${shipmentId}` }) 
+            return res.status(201).send({ message: `Berhasil membuat data pesanan baru, data order tersebut digabungkan bersama pengiriman dengan id ${shipmentId}` }) 
           }
         }
       } else {
@@ -287,7 +289,7 @@ const createOrder = async (req, res) => {
           totalWeight: orderBody.totalWeight
         })
 
-        res.status(201).send({ message: 'Berhasil membuat data order baru dengan pengiriman baru' }) 
+        return res.status(201).send({ message: 'Berhasil membuat data order baru dengan pengiriman baru' }) 
       }
       }
     } else {
@@ -296,11 +298,11 @@ const createOrder = async (req, res) => {
       await orderDetailServices.create(orderId, orderDetailBody)
     }
 
-    res.status(201).send({ message: 'Berhasil membuat data order baru' }) 
+    return res.status(201).send({ message: 'Berhasil membuat data order baru' }) 
 
   } catch (error) {
     console.error('Error createOrder controller', error)
-    res.status(500).send('Terdapat error saat menambahkan order')
+    return res.status(500).send('Terdapat error saat menambahkan order')
   }
 }
 

@@ -17,7 +17,7 @@ const columnsHeader = [
     Header: 'Tanggal Pengiriman',
     accessor: 'shipment_date',
     Cell: ({ cell }) => (
-      <p>{moment().format('YYYY-MMM-DD HH:mm').toLocaleString(cell.row.original.shipment_date)}</p>
+      <p>{moment(cell.row.original.shipment_date).format('YYYY-MMM-DD HH:mm')}</p>
     )
   },
   {

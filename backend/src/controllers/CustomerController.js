@@ -159,7 +159,7 @@ const compareCustomer = async (req, res) => {
       cardinalDirections.push(bearings[index])
   
       if (distanceBetweenTwo > 3000) {
-        res.status(200).send({ customer, message: `Data customer tersebut tidak bisa digabungkan karena jarak terdekat dan terjauh terlalu jauh yaitu ${distanceBetweenTwo} meter` })
+        return res.status(200).send({ customer, message: `Ada jarak antar pelanggan yang melebihi 1 KM yaitu ${distanceBetweenTwo} meter` })
       } else {
         if (cardinalDirections.length >= 2) {
           const isSameWayDirection = cardinalDirections[i] === cardinalDirections[i-1] 
@@ -173,7 +173,7 @@ const compareCustomer = async (req, res) => {
     }
   } catch (error) {
     console.error('Error updateCustomer controller', console.error(error))
-    res.status(500).send('Terdapat error saat membandingkan data customer')
+    return res.status(500).send('Terdapat error saat membandingkan data customer')
   }
 }
 

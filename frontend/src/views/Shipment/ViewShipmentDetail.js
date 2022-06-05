@@ -49,6 +49,16 @@ const columnsHeader = [
         {cell.row.values.total_weight} kg
       </p>
     )
+  },
+  {
+    width: 300,
+    Header: "Aksi",
+    accessor: "id",
+    Cell: ({ cell }) => (
+      <a href={`/admin/order/list/${cell.row.original.order.id}`} value={cell.row.original.order.id} className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150' target='_blank' rel='noreferrer'>
+        Lihat Data Order
+      </a>
+    )
   }
 ]
 
