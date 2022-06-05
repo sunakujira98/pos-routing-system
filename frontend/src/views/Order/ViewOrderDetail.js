@@ -44,8 +44,8 @@ const ViewOrderDetail = () => {
     );
   }
 
-  const shipmentTruck = data?.shipment_details[0].shipment.truck.id
-  const shipmentLabel = shipmentTruck ? `dikirim dengan ${shipmentTruck}` : ''
+  const shipment = data?.shipment_details[0].shipment.id
+  const shipmentLabel = shipment ? `dikirim dengan id pengiriman ${shipment}` : ''
   
   return (
     <div className='relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded'>
