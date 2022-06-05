@@ -122,175 +122,174 @@ const createOrder = async (req, res) => {
           }
         }
 
-      // append with orders, change sequence, etc
-      if (compareOrders[nearestOrderIndex] !== undefined) {
-        // previous order
-        const orderLatLongArr = []
-        
-        const nearestOrder = compareOrders[nearestOrderIndex]
-        const orderLatLong = nearestOrder.lat_long
-        const orderLat = getLat(orderLatLong)
-        const orderLong = getLng(orderLatLong)
-
-        orderLatLongArr.push({
-          lat: orderLat,
-          lng: orderLong,
-          orderId: order.id
-        })
-
-        // now we push to array for the current input from req.body
-        orderLatLongArr.push({
-          lat: customerLat,
-          lng: customerLong,
-          orderId
-        })
-
-        // can make this as a function to be reusable
-        const dMatrix = await distanceMatrixServices.getDistanceMatrix(null, orderLatLongArr, true)
-        const distanceArray = dMatrix.rows[0].elements
-
-        // origins are from store
-        const distanceArrayMap = distanceArray.map((obj, index) => ({
-          ...obj, 
-          orderId: orderLatLongArr[index].orderId, 
-          lat: orderLatLongArr[index].lat,
-          lng: orderLatLongArr[index].lng
-        }))
-
-        distanceArrayMap.sort(compare)
-
-        let latOrigin = -6.917195
-        let lngOrigin = 107.600941
-        const cardinalDirections = []
-
-        // compare most far with the 2nd furthest 
-        if (distanceArrayMap.length > 1) {
-          const shipmentId = compareOrders[nearestOrderIndex].shipment_id
-          const mostFarObj = distanceArrayMap[distanceArrayMap.length - 1] 
-          const secondMostFarObj = distanceArrayMap[distanceArrayMap.length - 2]
-
-          const distanceBetweenTwo = Math.abs(mostFarObj.distance.value - secondMostFarObj.distance.value)
+        // append with orders, change sequence, etc
+        if (compareOrders[nearestOrderIndex] !== undefined) {
+          // previous order
+          const orderLatLongArr = []
           
-          if (distanceBetweenTwo > 1000) {
-            await createNewShipment({
-              orderId,
-              truckId,
-              customerLatLongArr,
-              shipFromStore: true,
-              totalWeight: orderBody.totalWeight
-            })
+          const nearestOrder = compareOrders[nearestOrderIndex]
+          const orderLatLong = nearestOrder.lat_long
+          const orderLat = getLat(orderLatLong)
+          const orderLong = getLng(orderLatLong)
 
-            res.status(201).send({ message: 'Berhasil membuat data order baru dengan pengiriman baru dikarenakan jarak terlalu jauh dengan pengiriman saat ini' }) 
-          } 
-          else {
-            const shipmentId = compareOrders[nearestOrderIndex].shipment_id // for now hardcode to index 0
+          orderLatLongArr.push({
+            lat: orderLat,
+            lng: orderLong,
+            orderId: order.id
+          })
 
-            // insert to same shipment id
-            await shipmentDetailServices.create({
-              orderId, 
-              shipmentId, 
-              totalWeight: req.body.totalWeight,
-              distanceFromPreviousOrigin: 0,
-              distanceFromStore: 0,
-              sequence: 1
-            })
+          // now we push to array for the current input from req.body
+          orderLatLongArr.push({
+            lat: customerLat,
+            lng: customerLong,
+            orderId
+          })
 
-            for (let i = 0; i < distanceArrayMap.length; i++) {
-              const orderIdData = distanceArrayMap[i].orderId
-              let sequence = 0
+          // can make this as a function to be reusable
+          const dMatrix = await distanceMatrixServices.getDistanceMatrix(null, orderLatLongArr, true)
+          const distanceArray = dMatrix.rows[0].elements
 
-              if (i === 0) {
-                sequence = 1
-                const distanceFromStore = distanceArrayMap[i].distance.value
+          // origins are from store
+          const distanceArrayMap = distanceArray.map((obj, index) => ({
+            ...obj, 
+            orderId: orderLatLongArr[index].orderId, 
+            lat: orderLatLongArr[index].lat,
+            lng: orderLatLongArr[index].lng
+          }))
 
-                await shipmentDetailServices.updateSequence(orderIdData, sequence)
-                await shipmentDetailServices.updateDistance(orderIdData, distanceFromStore, 0)
-              } else {
-                sequence = i
-                lat1 = latOrigin;
-                lon1 = lngOrigin;
-                let lat2 = distanceArrayMap[i].lat;
-                let lon2 = distanceArrayMap[i].lng;
-            
-                lat1 = lat1 * Math.PI / 180;
-                lat2 = lat2 * Math.PI / 180;
-                const dLon = (lon2-lon1) * Math.PI / 180;
-                const y = Math.sin(dLon) * Math.cos(lat2);
-                const x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
-            
-                let bearing = Math.atan2(y, x) * 180 / Math.PI;
-            
-                if (bearing < 0) {
-                  bearing = bearing + 360;
-                }
-            
-                bearing = bearing.toFixed(0);
-            
-                const bearings = ["Timur Laut", "Timur", "Tenggara", "Selatan", "Barat Daya", "Barat", "Barat Laut", "Utara"];
-            
-                let degree = bearing - 22.5;
-                if (degree < 0) degree += 360;
-                degree = parseInt(degree / 45);
-            
-                cardinalDirections.push(bearings[degree])
+          distanceArrayMap.sort(compare)
 
-                if (cardinalDirections.length >= 2) {
-                  const isSameWayDirection = cardinalDirections[i] === cardinalDirections[i-1]
-                  if (isSameWayDirection) {
-                    const prevOrderShipment = await orderServices.getOrdersBelongToShipmentByOrderId(distanceArrayMap[i-1].orderId)
-                    const currentOrderShipment = await orderServices.getOrdersBelongToShipmentByOrderId(distanceArrayMap[i].orderId)
+          let latOrigin = -6.917195
+          let lngOrigin = 107.600941
+          const cardinalDirections = []
 
-                    if (i === distanceArrayMap.length - 1) {
-                      sequence = distanceArrayMap.length
+          // compare most far with the 2nd furthest 
+          if (distanceArrayMap.length > 1) {
+            const shipmentId = compareOrders[nearestOrderIndex].shipment_id
+            const mostFarObj = distanceArrayMap[distanceArrayMap.length - 1] 
+            const secondMostFarObj = distanceArrayMap[distanceArrayMap.length - 2]
+
+            const distanceBetweenTwo = Math.abs(mostFarObj.distance.value - secondMostFarObj.distance.value)
+            
+            if (distanceBetweenTwo > 1000) {
+              await createNewShipment({
+                orderId,
+                truckId,
+                customerLatLongArr,
+                shipFromStore: true,
+                totalWeight: orderBody.totalWeight
+              })
+
+              res.status(201).send({ message: 'Berhasil membuat data order baru dengan pengiriman baru dikarenakan jarak terlalu jauh dengan pengiriman saat ini' }) 
+            } 
+            else {
+              const shipmentId = compareOrders[nearestOrderIndex].shipment_id // for now hardcode to index 0
+
+              // insert to same shipment id
+              await shipmentDetailServices.create({
+                orderId, 
+                shipmentId, 
+                totalWeight: req.body.totalWeight,
+                distanceFromPreviousOrigin: 0,
+                distanceFromStore: 0,
+                sequence: 1
+              })
+
+              for (let i = 0; i < distanceArrayMap.length; i++) {
+                const orderIdData = distanceArrayMap[i].orderId
+                let sequence = 0
+
+                if (i === 0) {
+                  sequence = 1
+                  const distanceFromStore = distanceArrayMap[i].distance.value
+
+                  await shipmentDetailServices.updateSequence(orderIdData, sequence)
+                  await shipmentDetailServices.updateDistance(orderIdData, distanceFromStore, 0)
+                } else {
+                  sequence = i
+                  lat1 = latOrigin;
+                  lon1 = lngOrigin;
+                  let lat2 = distanceArrayMap[i].lat;
+                  let lon2 = distanceArrayMap[i].lng;
+              
+                  lat1 = lat1 * Math.PI / 180;
+                  lat2 = lat2 * Math.PI / 180;
+                  const dLon = (lon2-lon1) * Math.PI / 180;
+                  const y = Math.sin(dLon) * Math.cos(lat2);
+                  const x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+              
+                  let bearing = Math.atan2(y, x) * 180 / Math.PI;
+              
+                  if (bearing < 0) {
+                    bearing = bearing + 360;
+                  }
+              
+                  bearing = bearing.toFixed(0);
+              
+                  const bearings = ["Timur Laut", "Timur", "Tenggara", "Selatan", "Barat Daya", "Barat", "Barat Laut", "Utara"];
+              
+                  let degree = bearing - 22.5;
+                  if (degree < 0) degree += 360;
+                  degree = parseInt(degree / 45);
+              
+                  cardinalDirections.push(bearings[degree])
+
+                  if (cardinalDirections.length >= 2) {
+                    const isSameWayDirection = cardinalDirections[i] === cardinalDirections[i-1]
+                    if (isSameWayDirection) {
+                      const prevOrderShipment = await orderServices.getOrdersBelongToShipmentByOrderId(distanceArrayMap[i-1].orderId)
+                      const currentOrderShipment = await orderServices.getOrdersBelongToShipmentByOrderId(distanceArrayMap[i].orderId)
+
+                      if (i === distanceArrayMap.length - 1) {
+                        sequence = distanceArrayMap.length
+                      } else {
+                        sequence = i
+                      }
+
+                      const latPrev = getLat(prevOrderShipment.lat_long)
+                      const lngPrev = getLng(prevOrderShipment.lat_long)
+                      const latLangPrev = [{lat: latPrev, lng: lngPrev}]
+          
+                      const latCurr = getLat(currentOrderShipment.lat_long)
+                      const lngCurr = getLng(currentOrderShipment.lat_long)
+                      const latLangCurr = [{lat: latCurr, lng: lngCurr}]
+          
+                      const dMatrixFromPrev = await distanceMatrixServices.getDistanceMatrix(latLangPrev, latLangCurr, false)
+                      const distanceFromPrev = dMatrixFromPrev.rows[0].elements[0].distance.value
+                      const distanceFromStore = distanceArrayMap[i].distance.value
+          
+                      await shipmentDetailServices.updateSequence(orderIdData, sequence)
+                      await shipmentDetailServices.updateDistance(orderIdData, distanceFromStore, distanceFromPrev)
+                      return res.status(200).send({ message: 'Data pengiriman customer tersebut bisa digabungkan' })
                     } else {
-                      sequence = i
+                      await createNewShipment({
+                        orderId,
+                        truckId,
+                        customerLatLongArr,
+                        shipFromStore: true,
+                        totalWeight: orderBody.totalWeight
+                      })
+
+                      return res.status(200).send({ message: `Data pengiriman customer tersebut tidak bisa digabungkan karena arah berbeda ${cardinalDirections.toString()} sehingga dibuat pengiriman baru` })
                     }
-
-                    const latPrev = getLat(prevOrderShipment.lat_long)
-                    const lngPrev = getLng(prevOrderShipment.lat_long)
-                    const latLangPrev = [{lat: latPrev, lng: lngPrev}]
-        
-                    const latCurr = getLat(currentOrderShipment.lat_long)
-                    const lngCurr = getLng(currentOrderShipment.lat_long)
-                    const latLangCurr = [{lat: latCurr, lng: lngCurr}]
-        
-                    const dMatrixFromPrev = await distanceMatrixServices.getDistanceMatrix(latLangPrev, latLangCurr, false)
-                    const distanceFromPrev = dMatrixFromPrev.rows[0].elements[0].distance.value
-                    const distanceFromStore = distanceArrayMap[i].distance.value
-        
-                    console.log("masuk siniiiiiiiiiii")
-                    await shipmentDetailServices.updateSequence(orderIdData, sequence)
-                    await shipmentDetailServices.updateDistance(orderIdData, distanceFromStore, distanceFromPrev)
-                    return res.status(200).send({ message: 'Data pengiriman customer tersebut bisa digabungkan' })
-                  } else {
-                    await createNewShipment({
-                      orderId,
-                      truckId,
-                      customerLatLongArr,
-                      shipFromStore: true,
-                      totalWeight: orderBody.totalWeight
-                    })
-
-                    return res.status(200).send({ message: `Data pengiriman customer tersebut tidak bisa digabungkan karena arah berbeda ${cardinalDirections.toString()} sehingga dibuat pengiriman baru` })
                   }
                 }
               }
+
+              return res.status(201).send({ message: `Berhasil membuat data pesanan baru, data order tersebut digabungkan bersama pengiriman dengan id ${shipmentId}` }) 
             }
-
-            return res.status(201).send({ message: `Berhasil membuat data pesanan baru, data order tersebut digabungkan bersama pengiriman dengan id ${shipmentId}` }) 
           }
-        }
-      } else {
-        await createNewShipment({
-          orderId,
-          truckId,
-          customerLatLongArr,
-          shipFromStore: true,
-          totalWeight: orderBody.totalWeight
-        })
+        } else {
+          await createNewShipment({
+            orderId,
+            truckId,
+            customerLatLongArr,
+            shipFromStore: true,
+            totalWeight: orderBody.totalWeight
+          })
 
-        return res.status(201).send({ message: 'Berhasil membuat data order baru dengan pengiriman baru' }) 
-      }
+          return res.status(201).send({ message: 'Berhasil membuat data order baru dengan pengiriman baru' }) 
+        }
       }
     } else {
       const order = await orderServices.create(orderBody)

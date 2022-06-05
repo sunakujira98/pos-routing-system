@@ -20,16 +20,16 @@ const ProductCard = ({ id, name, price, onClick }) => {
       <span
         className='block w-28 bg-gray-300 h-16 whitespace-pre-wrap'
       >
-        <span
-          className='align-middle inline-block'
+        <p
+          className='align-middle'
         >
           {name}
-        </span>
-        <span
-          className='align-middle inline-block'
+        </p>
+        <p
+          className='align-middle'
         >
           {showNumberInRupiah(price)}
-        </span>
+        </p>
       </span>
     </button>
   )
