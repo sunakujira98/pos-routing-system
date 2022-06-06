@@ -43,7 +43,7 @@ const OrderCart = ({ id, productData, products, setProducts }) => {
   const [ customerDropdown, setCustomerDropdown ] = useState([])
   const [ truckDropdown, setTruckDropdown ] = useState([])
   const [ subtotalState, setSubtotalState ] = useState([])
-  const [ formData, setFormData ] = useState({})
+  const [ gMessage, setGMessage ] = useState('')
 
   const watchShipping = useWatch({
     control,
@@ -52,6 +52,7 @@ const OrderCart = ({ id, productData, products, setProducts }) => {
   
   useEffect(() => {
     if (isSuccessOrder) {
+    setGMessage(null)
       if (orderData?.shouldOpenModal) {
         openModal()
       }
@@ -62,10 +63,12 @@ const OrderCart = ({ id, productData, products, setProducts }) => {
       }
     }
     if (isSuccessCombine) {
+    setGMessage(combineData.message)
       if (combineData?.shouldCloseModal) {
         closeModal()
       }
     }
+
   }, [isSuccessOrder, orderData, deleteData, isSuccessDelete, combineData, isSuccessCombine])
 
   const openModal = () => {
@@ -171,7 +174,6 @@ const OrderCart = ({ id, productData, products, setProducts }) => {
   }
 
   const submitForm = (data) => {
-    setFormData(data)
     createOrderMutation.mutate(data)
   }
   
@@ -396,7 +398,7 @@ const OrderCart = ({ id, productData, products, setProducts }) => {
                 </>
               }
               <div className='rounded-t mb-0 py-6'>
-              {isSuccessOrder && <p>{orderData?.message}</p>}
+              {isSuccessOrder && <p>{gMessage || orderData?.message}</p>}
                 <div className='float-right'>
                   {isLoadingOrder ? 
                   <p>Harap Tunggu...</p> :
