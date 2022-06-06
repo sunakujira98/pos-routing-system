@@ -72,5 +72,16 @@ const getOrdersNotBelongToShipment = async () => {
   return orders
 }
 
+const erase = async (id) => {
+  try {
+    const deleteOrder = await prisma.$queryRaw`DELETE FROM orders WHERE id=${id}`
 
-module.exports = { get, getById, create, getOrdersBelongToShipment, getOrdersNotBelongToShipment, getOrdersBelongToShipmentByOrderId }
+    return deleteOrder
+  } catch (error) {
+    console.log('Error in delete order service', error)
+    return error
+  }
+}
+
+
+module.exports = { get, getById, create, getOrdersBelongToShipment, getOrdersNotBelongToShipment, getOrdersBelongToShipmentByOrderId, erase }

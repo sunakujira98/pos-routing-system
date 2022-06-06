@@ -172,6 +172,8 @@ const createOrder = async (req, res) => {
             const distanceBetweenTwo = Math.abs(mostFarObj.distance.value - secondMostFarObj.distance.value)
             
             if (distanceBetweenTwo > 1000) {
+              return res.status(206).send({message: `Data pengiriman tersebut terlalu jauh dengan pengiriman yang ada saat ini, apakah ingin dikirimkan bersama dengan pengiriman dengan id ${shipmentId} ?`, shouldOpenModal: true, orderId, truckId, customerLatLongArr, shipFromStore: true, totalWeight: orderBody.totalWeight})
+
               await createNewShipment({
                 orderId,
                 truckId,
@@ -179,8 +181,7 @@ const createOrder = async (req, res) => {
                 shipFromStore: true,
                 totalWeight: orderBody.totalWeight
               })
-
-              res.status(201).send({ message: 'Berhasil membuat data order baru dengan pengiriman baru dikarenakan jarak terlalu jauh dengan pengiriman saat ini' }) 
+              
             } 
             else {
               const shipmentId = compareOrders[nearestOrderIndex].shipment_id // for now hardcode to index 0
@@ -359,8 +360,27 @@ const createOrder = async (req, res) => {
   }
 }
 
+const createCombineShipment = async (req, res) => {
+  console.log("req.body", req.body)
+}
+
+const deleteOrder = async (req, res) => {
+  try {
+    const orderId = parseInt(req.params.id)
+  
+    await orderDetailServices.erase(orderId)
+    await orderServices.erase(orderId)
+    return res.status(200).send({message: 'Berhasil memproses data', shouldCloseModal: true})
+  } catch (error) {
+    console.error('Error deleteOrder controller', error)
+    return res.status(500).send('Terdapat error pada sistem')
+  }
+}
+
 module.exports = {
   getOrders,
   getOrderById,
-  createOrder
+  createOrder,
+  createCombineShipment,
+  deleteOrder
 }

@@ -17,3 +17,9 @@ export const createOrder = (requestBody) => {
 
   return axios.post(url, requestBody)
 }
+
+export const deleteOrder = (id) => {
+  const url = `http://localhost:3001/api/order/${id}`
+
+  return axios.delete(url)
+}

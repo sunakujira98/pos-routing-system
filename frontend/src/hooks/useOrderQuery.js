@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from 'react-query'
-import { getAllOrder, createOrder, getOrderById } from '../services/order'
+import { getAllOrder, createOrder, getOrderById, deleteOrder } from '../services/order'
 
 export const useAllOrderQuery = () => {
   const query = useQuery(['all-order'], async () => {
@@ -22,6 +22,15 @@ export const useOrderByIdQuery = (id) => {
 export const useCreateOrderQuery = () => {
   const mutation = useMutation(async (requestBody) => {
     const response = await createOrder(requestBody)
+    return response?.data
+  })
+
+  return mutation
+}
+
+export const useDeleteProductQuery = () => {
+  const mutation = useMutation(async (id) => {
+    const response = await deleteOrder(id)
     return response?.data
   })
 
