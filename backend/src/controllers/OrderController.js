@@ -172,16 +172,7 @@ const createOrder = async (req, res) => {
             const distanceBetweenTwo = Math.abs(mostFarObj.distance.value - secondMostFarObj.distance.value)
             
             if (distanceBetweenTwo > 1000) {
-              return res.status(206).send({message: `Data pengiriman tersebut terlalu jauh dengan pengiriman yang ada saat ini, apakah ingin dikirimkan bersama dengan pengiriman dengan id ${shipmentId} ?`, shouldOpenModal: true, orderId, truckId, customerLatLongArr, shipFromStore: true, totalWeight: orderBody.totalWeight})
-
-              await createNewShipment({
-                orderId,
-                truckId,
-                customerLatLongArr,
-                shipFromStore: true,
-                totalWeight: orderBody.totalWeight
-              })
-              
+              return res.status(206).send({message: `Data pengiriman tersebut terlalu jauh dengan pengiriman yang ada saat ini, apakah ingin dikirimkan bersama dengan pengiriman dengan id ${shipmentId} ?`, shouldOpenModal: true, orderId, truckId, customerLatLongArr, shipFromStore: true, totalWeight: orderBody.totalWeight, shipmentId: shipmentId})
             } 
             else {
               const shipmentId = compareOrders[nearestOrderIndex].shipment_id // for now hardcode to index 0
@@ -361,7 +352,17 @@ const createOrder = async (req, res) => {
 }
 
 const createCombineShipment = async (req, res) => {
-  console.log("req.body", req.body)
+  const { orderId, truckId, customerLatLongArr, totalWeight, shipmentId } = req.body
+
+  await createNewShipment({
+    orderId,
+    truckId,
+    customerLatLongArr,
+    shipFromStore: true,
+    totalWeight
+  })
+
+  return res.status(200).send({message: `Berhasil menggabungkan order tersebut dengan pengiriman ${shipmentId}`, shouldCloseModal: true})
 }
 
 const deleteOrder = async (req, res) => {

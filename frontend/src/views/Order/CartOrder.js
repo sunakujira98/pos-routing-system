@@ -9,7 +9,7 @@ import ErrorLabel from '../../components/ErrorLabel'
 import { showNumberInRupiah } from '../../utils/Helpers'
 import { useAllCustomerQuery } from '../../hooks/useCustomerQuery'
 import { useAllTruckQuery } from '../../hooks/useTruckQuery'
-import { useCreateOrderQuery, useDeleteProductQuery } from '../../hooks/useOrderQuery'
+import { useCreateOrderQuery, useDeleteProductQuery, useCombineShipmentQuery } from '../../hooks/useOrderQuery'
 
 const customStyles = {
   content: {
@@ -34,6 +34,9 @@ const OrderCart = ({ id, productData, products, setProducts }) => {
   const deleteOrderMutation = useDeleteProductQuery()
   const {isLoading: isLoadingDelete, isSuccess: isSuccessDelete, isError: isErrorDelete, data: deleteData, error: errorDelete} = deleteOrderMutation
 
+  const combineShipmentMutation = useCombineShipmentQuery()
+  const {isLoading: isLoadingCombine, isSuccess: isSuccessCombine, isError: isErrorCombine, data: combineData, error: errorCombine} = combineShipmentMutation
+
   const [ totalWeight, setTotalWeight ] = useState(0)
   const [ grandTotal, setGrandTotal ] = useState(0)
   const [ modalIsOpen, setIsOpen ] = useState(false)
@@ -54,12 +57,16 @@ const OrderCart = ({ id, productData, products, setProducts }) => {
       }
     }
     if (isSuccessDelete) {
-      console.log("deleteData", deleteData)
       if (deleteData?.shouldCloseModal) {
         closeModal()
       }
     }
-  }, [isSuccessOrder, orderData, deleteData, isSuccessDelete])
+    if (isSuccessCombine) {
+      if (combineData?.shouldCloseModal) {
+        closeModal()
+      }
+    }
+  }, [isSuccessOrder, orderData, deleteData, isSuccessDelete, combineData, isSuccessCombine])
 
   const openModal = () => {
     setIsOpen(true);
@@ -70,7 +77,7 @@ const OrderCart = ({ id, productData, products, setProducts }) => {
   }
 
   const onYesModal = () => {
-    console.log("yes")
+    combineShipmentMutation.mutate(orderData)
   }
 
   const onNoModal = () => {

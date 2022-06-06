@@ -23,3 +23,9 @@ export const deleteOrder = (id) => {
 
   return axios.delete(url)
 }
+
+export const combineShipment = (requestBody) => {
+  const url = 'http://localhost:3001/api/order/combine-shipment'
+
+  return axios.post(url, requestBody)
+}
