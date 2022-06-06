@@ -44,7 +44,7 @@ const ViewOrderDetail = () => {
     );
   }
 
-  const shipment = data?.shipment_details[0].shipment.id
+  const shipment = data?.shipment_details?.[0] ? data?.shipment_details[0].shipment?.id : null
   const shipmentLabel = shipment ? `dikirim dengan id pengiriman ${shipment}` : ''
   
   return (
