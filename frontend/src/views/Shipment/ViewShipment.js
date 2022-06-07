@@ -17,7 +17,7 @@ const columnsHeader = [
     Header: 'Tanggal Pengiriman',
     accessor: 'shipment_date',
     Cell: ({ cell }) => (
-      <p>{moment(cell.row.original.shipment_date).format('YYYY-MMM-DD HH:mm')}</p>
+      <p>{moment.utc(cell.row.original.shipment_date).format('YYYY-MMM-DD HH:mm')}</p>
     )
   },
   {

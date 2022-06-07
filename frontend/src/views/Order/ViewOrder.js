@@ -21,7 +21,7 @@ const columnsHeader = [
     Header: 'Tanggal Pemesanan',
     accessor: 'order_date',
     Cell: ({ cell }) => (
-      <p>{moment(cell.row.original.order_date).format('YYYY-MMM-DD HH:mm')}</p>
+      <p>{moment.utc(cell.row.original.order_date).format('YYYY-MMM-DD HH:mm')}</p>
     )
   },
   {
