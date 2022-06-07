@@ -20,6 +20,12 @@ const getByOrderId = async orderId => {
   return shipmentDetails
 }
 
+const getByShipmentId = async shipmentId => {
+  const shipmentDetails = await prisma.shipment_details.findMany({ where: { shipment_id: shipmentId } })
+
+  return shipmentDetails
+}
+
 const create = async ({
   orderId, shipmentId, totalWeight, distanceFromPreviousOrigin, distanceFromStore, sequence
 }) => {
@@ -90,4 +96,4 @@ const updateStatus = async (shipmentId, status) => {
   }
 }
 
-module.exports = { get, getById, getByOrderId, create, updateSequence, updateDistance, updateStatus }
+module.exports = { get, getById, getByOrderId, getByShipmentId, create, updateSequence, updateDistance, updateStatus }

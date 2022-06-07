@@ -12,7 +12,7 @@ const columnsHeader = [
     accessor: 'order_id',
   },
   {
-    Header: 'Jarak dari toko',
+    Header: 'Jarak dari toko menggunakan kendaraan',
     accessor: 'distance_from_store',
     Cell: ({ cell }) => (
       <p>
@@ -21,7 +21,7 @@ const columnsHeader = [
     )
   },
   {
-    Header: 'Jarak dari destinasi sebelumnya',
+    Header: 'Jarak dari destinasi sebelumnya menggunakan kendaraan',
     accessor: 'distance_from_previous_origin',
     Cell: ({ cell }) => (
       <p>

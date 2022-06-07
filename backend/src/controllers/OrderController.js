@@ -13,6 +13,29 @@ const compare = (prevValue, nextValue) => {
   return 0
 }
 
+const createNewShipmentDetail = async ({ orderId, truckId, customerLatLongArr, shipFromStore, totalWeight, shipmentId, nearestOrder }) => {
+  // set last params to true to send from store
+  const nearestLatLong = nearestOrder.lat_long
+  const nearestLat = getLat(nearestLatLong)
+  const nearestLng = getLng(nearestLatLong)
+  const distanceMatrixPrevious = await distanceMatrixServices.getDistanceMatrix([{lat: nearestLat, lng: nearestLng}], customerLatLongArr, false )
+  const distanceMatrixStore = await distanceMatrixServices.getDistanceMatrix(null, customerLatLongArr, shipFromStore )
+
+  const dataObjPrev = distanceMatrixPrevious.rows[0].elements[0]
+  const dataObjStore = distanceMatrixStore.rows[0].elements[0]
+
+  const shipmentDetails = await shipmentDetailServices.getByShipmentId(shipmentId)
+
+  await shipmentDetailServices.create({
+    orderId, 
+    shipmentId, 
+    totalWeight: totalWeight, 
+    distanceFromPreviousOrigin: dataObjPrev.distance.value, 
+    distanceFromStore: dataObjStore.distance.value,
+    sequence: shipmentDetails.length + 1
+  })
+}
+
 const createNewShipment = async ({ orderId, truckId, customerLatLongArr, shipFromStore, totalWeight }) => {
   const shipment = await shipmentServices.create(truckId)
   const shipmentId = shipment.id
@@ -172,7 +195,7 @@ const createOrder = async (req, res) => {
             const distanceBetweenTwo = Math.abs(mostFarObj.distance.value - secondMostFarObj.distance.value)
             
             if (distanceBetweenTwo > 1000) {
-              return res.status(206).send({message: `Data pengiriman tersebut terlalu jauh dengan pengiriman yang ada saat ini, apakah ingin dikirimkan bersama dengan pengiriman dengan id ${shipmentId} ?`, shouldOpenModal: true, orderId, truckId, customerLatLongArr, shipFromStore: true, totalWeight: orderBody.totalWeight, shipmentId: shipmentId})
+              return res.status(206).send({message: `Data pengiriman tersebut terlalu jauh dengan pengiriman yang ada saat ini, apakah ingin dikirimkan bersama dengan pengiriman dengan id ${shipmentId} ?`, shouldOpenModal: true, orderId, truckId, customerLatLongArr, shipFromStore: true, totalWeight: orderBody.totalWeight, shipmentId: shipmentId, nearestOrder: compareOrders[nearestOrderIndex]})
             } 
             else {
               const shipmentId = compareOrders[nearestOrderIndex].shipment_id // for now hardcode to index 0
@@ -352,14 +375,16 @@ const createOrder = async (req, res) => {
 }
 
 const createCombineShipment = async (req, res) => {
-  const { orderId, truckId, customerLatLongArr, totalWeight, shipmentId } = req.body
+  const { orderId, truckId, customerLatLongArr, totalWeight, shipmentId, nearestOrder } = req.body
 
-  await createNewShipment({
+  await createNewShipmentDetail({
     orderId,
     truckId,
     customerLatLongArr,
     shipFromStore: true,
-    totalWeight
+    totalWeight,
+    shipmentId,
+    nearestOrder
   })
 
   return res.status(200).send({message: `Berhasil menggabungkan order tersebut dengan pengiriman ${shipmentId}`, shouldCloseModal: true})

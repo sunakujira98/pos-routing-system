@@ -66,6 +66,9 @@ const OrderCart = ({ id, productData, products, setProducts }) => {
     setGMessage(combineData.message)
       if (combineData?.shouldCloseModal) {
         closeModal()
+        setTimeout(function(){
+          window.location.reload(1);
+       }, 2000);
       }
     }
 
