@@ -8,7 +8,15 @@ const get = async () => {
 }
 
 const getById = async id => {
-  const truck = await prisma.truck.findUnique({ where: { id } })
+  const truck = await prisma.truck.findUnique({ where: { id },include: 
+    {
+      shipments: {
+        include: {
+          truck: true
+        }
+      }
+    } 
+  })
 
   return truck
 }

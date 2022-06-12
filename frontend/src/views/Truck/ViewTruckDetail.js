@@ -1,21 +1,26 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from "react-router-dom";
+import { useParams } from 'react-router-dom';
+import moment from 'moment'
 
 import TableInstance from '../../components/Table/TableInstance'
-import { useAllTruckQuery } from '../../hooks/useTruckQuery'
+import { useTruckByIdQuery } from '../../hooks/useTruckQuery'
 
 const columnsHeader = [
   {
-    Header: 'Nama Truk',
-    accessor: 'name',
+    Header: 'Truck Pengiriman',
+    accessor: 'truck.name',
   },
   {
-    Header: 'Kapasitas (dalam kg)',
-    accessor: 'capacity',
+    Header: 'Status',
+    accessor: 'status',
   },
   {
-    Header: 'No Kendaraan',
-    accessor: 'vehicle_no',
+    Header: 'Tanggal Pengiriman',
+    accessor: 'shipment_date',
+    Cell: ({ cell }) => (
+      <p>{moment.utc(cell.row.original.shipment_date).format('YYYY-MMM-DD HH:mm')}</p>
+    )
   },
   {
     width: 300,
@@ -23,26 +28,24 @@ const columnsHeader = [
     accessor: "id",
     Cell: ({ cell }) => (
       <>
-        <a href={`/admin/truck/update/${cell.row.values.id}`} value={cell.row.values.id} className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150' target='_blank' rel='noreferrer'>
-          Ubah data  
-        </a>
-        <a href={`/admin/truck/view/${cell.row.values.id}`} value={cell.row.values.id} className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150' target='_blank' rel='noreferrer'>
-          Lihat Riwayat
+        <a href={`/admin/shipment/list/${cell.row.values.id}`} value={cell.row.values.id} className='bg-blue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150' target='_blank' rel='noreferrer'>
+          Lihat Detail Pengiriman
         </a>
       </>
     )
   }
 ]
 
-const ViewTruck = () => {
-  const TableQuery = () => {
-    const { data, isLoading, isSuccess } = useAllTruckQuery()
+const ViewTruckDetail = () => {
+  const { id } = useParams();
+  const { data, isLoading, isSuccess } = useTruckByIdQuery(id)
 
+  const TableQuery = () => {
     const [tableData, setTableData] = useState(null);
   
     useEffect(() => {
-      setTableData(data);
-    }, [isSuccess, data])
+      setTableData(data?.shipments);
+    }, [])
 
     if (isLoading || !tableData) {
       return <div>Loading...</div>
@@ -59,7 +62,7 @@ const ViewTruck = () => {
         <div className='flex flex-wrap justify-between'>
           <div className='px-2'>
             <h3 className='font-semibold text-lg'>
-              Data Truck
+              Riwayat Penggunaan Truck {data?.name}
             </h3>
           </div>
           <div className='px-2'>
@@ -84,4 +87,4 @@ const ViewTruck = () => {
   )
 }
 
-export default ViewTruck
+export default ViewTruckDetail

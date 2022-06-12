@@ -13,6 +13,7 @@ import ViewCustomer from '../views/Customer/ViewCustomer'
 import CreateTruck from '../views/Truck/CreateTruck'
 import EditTruck from '../views/Truck/EditTruck'
 import ViewTruck from '../views/Truck/ViewTruck'
+import ViewTruckDetail from '../views/Truck/ViewTruckDetail'
 
 import CreateProduct from '../views/Product/CreateProduct'
 import EditProduct from '../views/Product/EditProduct'
@@ -46,6 +47,7 @@ function Crud() {
             <Route exact path="/customer/list" element={<ViewCustomer />} />
             <Route exact path="/truck/create" element={<CreateTruck />} />
             <Route exact path="/truck/update/:id" element={<EditTruck />} />
+            <Route exact path="/truck/view/:id" element={<ViewTruckDetail />} />
             <Route exact path="/truck/list" element={<ViewTruck />} />
             <Route exact path="/product/create" element={<CreateProduct />} />
             <Route exact path="/product/update/:id" element={<EditProduct />} />
