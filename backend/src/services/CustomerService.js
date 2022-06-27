@@ -14,10 +14,10 @@ const getById = async id => {
 }
 
 const create = async customerData => {
-  const { name, phone, address, latLong } = customerData
+  const { name, phone, address, latLong, district } = customerData
 
   try {
-    const customer = await prisma.customer.create({ data: { name, phone, address, lat_long: latLong} })
+    const customer = await prisma.customer.create({ data: { name, phone, address, lat_long: latLong, district } })
 
     return customer
   } catch (error) {
@@ -27,12 +27,12 @@ const create = async customerData => {
 }
 
 const update = async (id, customerData) => {
-  const { name, phone, address, lat_long } = customerData
+  const { name, phone, address, lat_long, district } = customerData
 
   try {
     const customer = await prisma.customer.update({
       where: { id },
-      data: { name, phone, address, lat_long }
+      data: { name, phone, address, lat_long, district }
     })
 
     return customer

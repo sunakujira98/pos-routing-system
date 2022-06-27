@@ -10,6 +10,7 @@ model customer {
   name       String   @db.VarChar(255)
   phone      String   @db.VarChar(30)
   address    String   @db.VarChar(255)
+  district   String?  @db.VarChar(50)
   lat_long   String   @db.VarChar(255)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())

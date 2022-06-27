@@ -55,7 +55,7 @@ const create = async orderData => {
 }
 
 const getOrdersBelongToShipment = async (truckId) => {
-  const orders = await prisma.$queryRaw`select o.id, o.total_weight, o.order_date, c.id as customer_id, c.address, c.lat_long, sd.shipment_id as shipment_id from orders o INNER JOIN customer c ON c.id = o.customer_id INNER JOIN shipment_details sd ON sd.order_id=o.id INNER JOIN shipments s ON s.id = sd.shipment_id where o.order_date >= (NOW() - INTERVAL '3 hours') AND s.truck_id = ${truckId} AND s.status='NOT_SEND';`
+  const orders = await prisma.$queryRaw`select o.id, o.total_weight, o.order_date, c.id as customer_id, c.address, c.lat_long, c.district, sd.shipment_id as shipment_id from orders o INNER JOIN customer c ON c.id = o.customer_id INNER JOIN shipment_details sd ON sd.order_id=o.id INNER JOIN shipments s ON s.id = sd.shipment_id where o.order_date >= (NOW() - INTERVAL '3 hours') AND s.truck_id = ${truckId} AND s.status='NOT_SEND';`
 
   return orders
 }

@@ -47,7 +47,8 @@ const createCustomer = async (req, res) => {
   try {
     const customerBody = {
       ...req.body,
-      phone: String(req.body.phone)
+      phone: String(req.body.phone),
+      district: String(req.body.district.value)
     }
 
     const customer = await customerServices.create(customerBody)
@@ -66,7 +67,8 @@ const updateCustomer = async (req, res) => {
   const customerId = parseInt(id, 10)
   const customerBody = {
     ...req.body,
-    phone: String(req.body.phone)
+    phone: String(req.body.phone),
+    district: req.body.district.value
   } 
 
   try {
@@ -102,6 +104,7 @@ const compareCustomer = async (req, res) => {
         latLong: singleCustomer.lat_long,
         lat: customerLat,
         lng: customerLong,
+        district: singleCustomer.district
       })
   
       customerLatLongArr.push({lat: customerLat, lng: customerLong})
@@ -116,6 +119,7 @@ const compareCustomer = async (req, res) => {
       distanceArray[i].address = customerArr[i].address
       distanceArray[i].lat = customerArr[i].lat
       distanceArray[i].lng = customerArr[i].lng
+      distanceArray[i].district = customerArr[i].district
     }
   
     distanceArray.sort(compare)
@@ -123,46 +127,46 @@ const compareCustomer = async (req, res) => {
     // origin toko
     let latOrigin = -6.917195
     let lngOrigin = 107.600941
-    const cardinalDirections = []
+    const districtDirections = []
   
     for (let i = 0; i < distanceArray.length; i++) {
       const mostFarObj = distanceArray[distanceArray.length - 1] 
       const secondMostFarObj = distanceArray[distanceArray.length - 2]
       const distanceBetweenTwo = Math.abs(mostFarObj.distance.value - secondMostFarObj.distance.value)
   
-      // cardinal direction
-      lat1 = latOrigin;
-      lon1 = lngOrigin;
-      var lat2 = distanceArray[i].lat;
-      var lon2 = distanceArray[i].lng;
+      // // cardinal direction
+      // lat1 = latOrigin;
+      // lon1 = lngOrigin;
+      // var lat2 = distanceArray[i].lat;
+      // var lon2 = distanceArray[i].lng;
   
-      lat1 = lat1 * Math.PI / 180;
-      lat2 = lat2 * Math.PI / 180;
-      var dLon = (lon2-lon1) * Math.PI / 180;
-      var y = Math.sin(dLon) * Math.cos(lat2);
-      var x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+      // lat1 = lat1 * Math.PI / 180;
+      // lat2 = lat2 * Math.PI / 180;
+      // var dLon = (lon2-lon1) * Math.PI / 180;
+      // var y = Math.sin(dLon) * Math.cos(lat2);
+      // var x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
   
-      var bearing = Math.atan2(y, x) * 180 / Math.PI;
+      // var bearing = Math.atan2(y, x) * 180 / Math.PI;
   
-      if (bearing < 0) {
-        bearing = bearing + 360;
-      }
+      // if (bearing < 0) {
+      //   bearing = bearing + 360;
+      // }
   
-      bearing = bearing.toFixed(0);
+      // bearing = bearing.toFixed(0);
   
-      var bearings = ["Timur Laut", "Timur", "Tenggara", "Selatan", "Barat Daya", "Barat", "Barat Laut", "Utara"];
+      // var bearings = ["Timur Laut", "Timur", "Tenggara", "Selatan", "Barat Daya", "Barat", "Barat Laut", "Utara"];
   
-      let index = bearing - 22.5;
-      if (index < 0) index += 360;
-      index = parseInt(index / 45);
+      // let index = bearing - 22.5;
+      // if (index < 0) index += 360;
+      // index = parseInt(index / 45);
   
-      cardinalDirections.push(bearings[index])
+      districtDirections.push(distanceArray[i].district)
   
       if (distanceBetweenTwo > 3000) {
         return res.status(200).send({ customer, message: `Ada jarak antar pelanggan yang melebihi 1 KM yaitu ${distanceBetweenTwo} meter` })
       } else {
-        if (cardinalDirections.length >= 2) {
-          const isSameWayDirection = cardinalDirections[i] === cardinalDirections[i-1] 
+        if (districtDirections.length >= 2) {
+          const isSameWayDirection = districtDirections[i] === districtDirections[i-1] 
           if (isSameWayDirection) {
             return res.status(200).send({ customer, message: 'Data pengiriman customer tersebut bisa digabungkan' })
           } else {

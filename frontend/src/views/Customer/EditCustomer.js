@@ -1,13 +1,17 @@
 import React, { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { ErrorMessage } from '@hookform/error-message';
 import 'react-toastify/dist/ReactToastify.css';
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import Select from 'react-select'
 
 import ErrorLabel from '../../components/ErrorLabel'
 import { useCustomerByIdQuery, useUpdateCustomerQuery } from '../../hooks/useCustomerQuery'
+
+import { districtDropdown } from './constant'
 
 const schema = yup.object().shape({
   name: yup.string().required('Nama wajib diisi'),
@@ -29,7 +33,7 @@ const EditCustomer = () => {
     error: errorMutation
   } = updateCustomerMutation
 
-  const { register, handleSubmit, formState: {errors}, reset } = useForm({
+  const { register, handleSubmit, formState: {errors}, reset, control } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       customerData
@@ -120,7 +124,33 @@ const EditCustomer = () => {
                     />
                     <ErrorLabel>{errors.lat_long?.message} </ErrorLabel>
                   </div>
-                </div>  
+                </div>
+                <div className='w-full lg:w-6/12 px-4 mb-2'>
+                  <div className='relative w-full mb-3'>
+                    <label className='block uppercase text-gray-600 text-xs font-bold mb-2'>
+                      Nama daerah
+                    </label>
+                    <Controller
+                      name='district'
+                      control={control}
+                      rules={{ required: 'Daerah harus diisi' }}
+                      defaultValues={{value: 'Bandung-Timur', label: 'Bandung Timur'}}
+                      render={({field: {onChange, onBlur, ref, value}}) => 
+                        <Select
+                          onBlur={onBlur}
+                          onChange={onChange}
+                          ref={ref}
+                          options={
+                            districtDropdown
+                          }
+                        />
+                      }
+                    />
+                    <ErrorLabel>
+                      <ErrorMessage errors={errors} name='district' render={({ message }) => message} />
+                    </ErrorLabel>
+                  </div>
+                </div>
               </div>
             </div>
             <div className='rounded-t bg-white mb-0 px-6 py-6'>

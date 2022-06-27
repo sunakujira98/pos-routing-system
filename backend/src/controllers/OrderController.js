@@ -122,6 +122,7 @@ const createOrder = async (req, res) => {
         const customerId = parseInt(req.body.customer.value, 10)
         const customer = await customerServices.getById(customerId)
         const customerLatLong = customer.lat_long
+        const customerDistrict = customer.district
         const customerLat = getLat(customerLatLong)
         const customerLong = getLng(customerLatLong)
         const customerLatLongArr = [{lat: customerLat, lng: customerLong}]
@@ -158,13 +159,15 @@ const createOrder = async (req, res) => {
           orderLatLongArr.push({
             lat: orderLat,
             lng: orderLong,
-            orderId: order.id
+            district: order.district,
+            orderId: order.id,
           })
 
           // now we push to array for the current input from req.body
           orderLatLongArr.push({
             lat: customerLat,
             lng: customerLong,
+            district: customerDistrict,
             orderId
           })
 
@@ -177,14 +180,15 @@ const createOrder = async (req, res) => {
             ...obj, 
             orderId: orderLatLongArr[index].orderId, 
             lat: orderLatLongArr[index].lat,
-            lng: orderLatLongArr[index].lng
+            lng: orderLatLongArr[index].lng,
+            district: orderLatLongArr[index].district
           }))
 
           distanceArrayMap.sort(compare)
 
           let latOrigin = -6.917195
           let lngOrigin = 107.600941
-          const cardinalDirections = []
+          const districtDirections = []
 
           // compare most far with the 2nd furthest 
           if (distanceArrayMap.length > 1) {
@@ -222,35 +226,35 @@ const createOrder = async (req, res) => {
                   await shipmentDetailServices.updateDistance(orderIdData, distanceFromStore, 0)
                 } else {
                   sequence = i
-                  lat1 = latOrigin;
-                  lon1 = lngOrigin;
-                  let lat2 = distanceArrayMap[i].lat;
-                  let lon2 = distanceArrayMap[i].lng;
+                  // lat1 = latOrigin;
+                  // lon1 = lngOrigin;
+                  // let lat2 = distanceArrayMap[i].lat;
+                  // let lon2 = distanceArrayMap[i].lng;
               
-                  lat1 = lat1 * Math.PI / 180;
-                  lat2 = lat2 * Math.PI / 180;
-                  const dLon = (lon2-lon1) * Math.PI / 180;
-                  const y = Math.sin(dLon) * Math.cos(lat2);
-                  const x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+                  // lat1 = lat1 * Math.PI / 180;
+                  // lat2 = lat2 * Math.PI / 180;
+                  // const dLon = (lon2-lon1) * Math.PI / 180;
+                  // const y = Math.sin(dLon) * Math.cos(lat2);
+                  // const x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
               
-                  let bearing = Math.atan2(y, x) * 180 / Math.PI;
+                  // let bearing = Math.atan2(y, x) * 180 / Math.PI;
               
-                  if (bearing < 0) {
-                    bearing = bearing + 360;
-                  }
+                  // if (bearing < 0) {
+                  //   bearing = bearing + 360;
+                  // }
               
-                  bearing = bearing.toFixed(0);
+                  // bearing = bearing.toFixed(0);
               
-                  const bearings = ["Timur Laut", "Timur", "Tenggara", "Selatan", "Barat Daya", "Barat", "Barat Laut", "Utara"];
+                  // const bearings = ["Timur Laut", "Timur", "Tenggara", "Selatan", "Barat Daya", "Barat", "Barat Laut", "Utara"];
               
-                  let degree = bearing - 22.5;
-                  if (degree < 0) degree += 360;
-                  degree = parseInt(degree / 45);
+                  // let degree = bearing - 22.5;
+                  // if (degree < 0) degree += 360;
+                  // degree = parseInt(degree / 45);
               
-                  cardinalDirections.push(bearings[degree])
+                  districtDirections.push(distanceArrayMap[i].district)
 
-                  if (cardinalDirections.length >= 2) {
-                    const isSameWayDirection = cardinalDirections[i] === cardinalDirections[i-1]
+                  if (districtDirections.length >= 2) {
+                    const isSameWayDirection = districtDirections[i] === districtDirections[i-1]
                     if (isSameWayDirection) {
                       const prevOrderShipment = await orderServices.getOrdersBelongToShipmentByOrderId(distanceArrayMap[i-1].orderId)
                       const currentOrderShipment = await orderServices.getOrdersBelongToShipmentByOrderId(distanceArrayMap[i].orderId)
@@ -285,7 +289,7 @@ const createOrder = async (req, res) => {
                         totalWeight: orderBody.totalWeight
                       })
 
-                      return res.status(200).send({ message: `Data pengiriman customer tersebut tidak bisa digabungkan karena arah berbeda ${cardinalDirections.toString()} sehingga dibuat pengiriman baru` })
+                      return res.status(200).send({ message: `Data pengiriman customer tersebut tidak bisa digabungkan karena arah berbeda ${districtDirections.toString()} sehingga dibuat pengiriman baru` })
                     }
                   }
                 }
