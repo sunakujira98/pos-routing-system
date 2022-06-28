@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -12,6 +12,7 @@ import ErrorLabel from '../../components/ErrorLabel'
 import { useCustomerByIdQuery, useUpdateCustomerQuery } from '../../hooks/useCustomerQuery'
 
 import { districtDropdown } from './constant'
+import { replaceDashWithSpace } from '../../utils/Helpers';
 
 const schema = yup.object().shape({
   name: yup.string().required('Nama wajib diisi'),
@@ -21,9 +22,11 @@ const schema = yup.object().shape({
 });
 
 const EditCustomer = () => {
+  const [defaultDistrict, setDefaultDistrict] = useState(null)
+  const [extraRender, setExtraRender] = useState(false)
   const { id } = useParams();
 
-  const {data: customerData} = useCustomerByIdQuery(id)
+  const {data: customerData, isLoading, isSuccess} = useCustomerByIdQuery(id)
   const updateCustomerMutation = useUpdateCustomerQuery(id)
   const {
     isLoading: isLoadingMutation, 
@@ -42,13 +45,27 @@ const EditCustomer = () => {
 
   useEffect(() => {
     reset(customerData)
-  }, [customerData, reset])
+    if (isSuccess) {
+      setDefaultDistrict({
+        label: replaceDashWithSpace(customerData?.district),
+        value: customerData.district
+      })
+    }
+    
+    setExtraRender(true)
+  }, [customerData, reset, isSuccess])
 
   const submitForm = (formData) => {
     updateCustomerMutation.mutate(formData)
   }
 
-  return (
+  if (isLoading) {
+    return <p>Loading...</p>
+  }
+
+  const shouldRender = defaultDistrict !== null
+
+  return shouldRender && (
     <div className='flex flex-wrap'>
       <div className='w-full lg:w-8/12 px-4'>
         <form onSubmit={handleSubmit(submitForm)}>
@@ -134,12 +151,12 @@ const EditCustomer = () => {
                       name='district'
                       control={control}
                       rules={{ required: 'Daerah harus diisi' }}
-                      defaultValues={{value: 'Bandung-Timur', label: 'Bandung Timur'}}
                       render={({field: {onChange, onBlur, ref, value}}) => 
                         <Select
                           onBlur={onBlur}
                           onChange={onChange}
                           ref={ref}
+                          defaultValue={defaultDistrict}
                           options={
                             districtDropdown
                           }

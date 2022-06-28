@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 
 import TableInstance from '../../components/Table/TableInstance'
 import { useAllCustomerQuery } from '../../hooks/useCustomerQuery'
+import { replaceDashWithSpace } from '../../utils/Helpers'
+
 
 const columnsHeader = [
   {
@@ -20,6 +22,13 @@ const columnsHeader = [
   {
     Header: 'Latitude dan Longitude',
     accessor: 'lat_long',
+  },
+  {
+    Header: 'Daerah',
+    accessor: 'district',
+    Cell: ({ cell }) => (
+      <p>{replaceDashWithSpace(cell.row.original.district)}</p>
+    )
   },
   {
     width: 300,
